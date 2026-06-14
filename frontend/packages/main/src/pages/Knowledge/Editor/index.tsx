@@ -79,6 +79,7 @@ export default function Editor() {
           search_config: {
             top_k,
             similarity_threshold,
+            enable_rerank: Boolean(rerank_provider && rerank_model),
             rerank_provider,
             rerank_model,
           },
@@ -118,16 +119,6 @@ export default function Editor() {
           $i18n.get({
             id: 'main.pages.Knowledge.Create.index.pleaseSelectEmbeddingModel',
             dm: '请先选择Embedding模型',
-          }),
-        );
-        return;
-      }
-
-      if (!state.rerank_value?.trim()) {
-        reject(
-          $i18n.get({
-            id: 'main.pages.Knowledge.Create.index.pleaseSelectRerankModel',
-            dm: '请先选择Rerank模型',
           }),
         );
         return;
@@ -315,16 +306,16 @@ export default function Editor() {
                 </Tooltip>
               </div>
             }
-            required
           >
             <ModelSelector
               value={state.rerank_value}
               modelType="rerank"
+              allowClear
               onChange={(val: string) => {
                 changeFormValue({
                   rerank_value: val,
-                  rerank_model: val.split('@@@')[1],
-                  rerank_provider: val.split('@@@')[0],
+                  rerank_model: val?.split('@@@')[1] || '',
+                  rerank_provider: val?.split('@@@')[0] || '',
                 });
               }}
             />

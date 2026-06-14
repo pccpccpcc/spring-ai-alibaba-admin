@@ -83,6 +83,7 @@ export interface IUpdateModelParams {
   name: string;
   icon?: string;
   tags?: string[];
+  type?: string;
   enable?: boolean;
 }
 
@@ -163,5 +164,20 @@ export const MODEL_TAGS = {
   function_call: $i18n.get({
     id: 'main.types.modelService.tool',
     dm: '工具',
+  }),
+};
+
+export const MODEL_TYPES = {
+  llm: $i18n.get({
+    id: 'main.types.modelService.llm',
+    dm: 'LLM',
+  }),
+  text_embedding: $i18n.get({
+    id: 'main.types.modelService.textEmbedding',
+    dm: '嵌入',
+  }),
+  rerank: $i18n.get({
+    id: 'main.types.modelService.rerank',
+    dm: 'Rerank',
   }),
 };

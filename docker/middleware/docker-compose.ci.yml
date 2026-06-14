@@ -1,0 +1,116 @@
+# CI 专用最小中间件编排：仅 MySQL + Redis + RocketMQ。
+# 用于 GitHub Actions（见 .github/workflows/ci.yml）跑集成测试，与本机 docker-compose.yaml 区别：
+#   - 无宿主卷挂载（CI 容器用完即弃）
+#   - 无 UID/GID、无 env_file（CI 环境 POSIX 默认即可）
+#   - 仅保留集成测试真实依赖的三类中间件，不启动 ES / Kibana / Nacos / LoongCollector
+#
+# 本地开发请继续用 docker/middleware/docker-compose.yaml 或 scripts/deps-start.sh。
+
+services:
+
+  mysql:
+    image: mysql:8.0.35
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: admin_test
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+
+  redis:
+    image: redis:7.2.5
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  rmq_namesrv:
+    image: apache/rocketmq:5.3.2
+    restart: always
+    environment:
+      NAMESRV_ADDR: rmq_namesrv:9876
+      HEAP_OPTS: "-Xms128M -Xmx256M -Xmn128M"
+    ports:
+      - "9876:9876"
+    command: sh mqnamesrv
+    healthcheck:
+      test: ["CMD", "sh", "-c", "ps aux | grep mqnamesrv | grep -v grep || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  rmq_broker:
+    image: apache/rocketmq:5.3.2
+    restart: always
+    depends_on:
+      rmq_namesrv:
+        condition: service_healthy
+    environment:
+      NAMESRV_ADDR: rmq_namesrv:9876
+      HEAP_OPTS: "-Xms256M -Xmx512M -Xmn256M -XX:MaxDirectMemorySize=128M"
+    ports:
+      - "10909:10909"
+      - "10911:10911"
+      - "10912:10912"
+    command: sh mqbroker
+    healthcheck:
+      test: ["CMD", "sh", "-c", "ps aux | grep mqbroker | grep -v grep || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  rmq_proxy:
+    image: apache/rocketmq:5.3.2
+    restart: always
+    depends_on:
+      rmq_broker:
+        condition: service_healthy
+      rmq_namesrv:
+        condition: service_healthy
+    environment:
+      NAMESRV_ADDR: rmq_namesrv:9876
+      HEAP_OPTS: "-Xms128M -Xmx256M -Xmn128M"
+    ports:
+      - "18080:18080"
+      - "18081:18081"
+    volumes:
+      - ./conf/rocketmq:/home/rocketmq/conf
+    command: sh mqproxy -pc /home/rocketmq/conf/rmq-proxy.json
+
+  # 一次性容器：等待 broker 真正就绪后创建测试用 topic 与消费组。
+  # 在 workflow 里用 `docker compose ... run --rm init-topic` 单独执行并等待其退出。
+  init-topic:
+    image: apache/rocketmq:5.3.2
+    restart: "no"
+    depends_on:
+      rmq_namesrv:
+        condition: service_healthy
+      rmq_broker:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "
+        echo 'Waiting for RocketMQ broker to be fully ready...' &&
+        for i in $$(seq 1 60); do
+          if sh mqadmin clusterList -n rmq_namesrv:9876 >/dev/null 2>&1; then
+            echo 'Broker ready.';
+            break;
+          fi;
+          echo \"not ready yet ($$i/60)...\";
+          sleep 5;
+        done &&
+        sh mqadmin updateTopic -n rmq_namesrv:9876 -t topic_saa_studio_document_index -c DefaultCluster -a +message.type=NORMAL &&
+        sh mqadmin updateSubGroup -n rmq_namesrv:9876 -g group_saa_studio_document_index -c DefaultCluster &&
+        echo 'Topic and consumer group created.'"

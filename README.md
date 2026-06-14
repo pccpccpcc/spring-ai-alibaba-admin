@@ -52,14 +52,16 @@ Agent Studio is an AI Agent development and evaluation platform based on Spring 
 
 ### Overall Architecture
 
-![Overall Architecture](./docs/imgs/arch.png)
+![Overall Architecture](./docs/architecture.svg)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- 🐳 **Docker** (for containerized deployment) + **Docker Compose**: 2.0+
-- ☕ **Java 17+** (for source code execution) + **Maven**: 3.8+
-- 🌐 **AI Model Provider API Keys**, supporting OpenAI, DashScope, DeepSeek
+- 🐳 **Docker**, required by the LoongCollector container
+- ☕ **Java 17+**, JDK 21 recommended
+- **Maven**: 3.8+
+- **Node.js**: 20.x+, required to build the full console frontend
+- 🌐 **AI Model Provider API Keys**, supporting OpenAI-compatible providers, DashScope, DeepSeek, and others
 
 ### Running from Source Code
 
@@ -70,12 +72,22 @@ git clone https://github.com/spring-ai-alibaba/spring-ai-alibaba-admin.git
 cd spring-ai-alibaba-admin
 ```
 
-#### 2. Configure Your API Keys
-Modify the model configuration in `spring-ai-alibaba-admin-server-start/model-config.yaml` according to your model provider.
-- If you use DashScope, please refer to the model-config-dashscope.yaml template for configuration
-- If you use DeepSeek, please refer to the model-config-deepseek.yaml template for configuration
-- If you use OpenAI, please refer to the model-config-openai.yaml template for configuration
-> 💡 **Get Your DashScope API Key**: Visit [Alibaba Cloud Bailian Console](https://bailian.console.aliyun.com/?tab=model#/api-key) to get a free API key.
+#### 2. Install and Start Local Middleware
+
+For a new machine or a reset environment, run:
+
+```bash
+scripts/install-deps.sh
+```
+
+For day-to-day development, start the already installed middleware:
+
+```bash
+scripts/deps-start.sh
+scripts/deps-status.sh
+```
+
+The scripts manage MySQL, Redis, Elasticsearch, Kibana, Nacos, RocketMQ, and LoongCollector. They also initialize MySQL schemas, Elasticsearch trace pipeline/index, and the RocketMQ topic/consumer group required by document indexing.
 
 #### 3. Nacos Configuration (Optional)
 If you need to modify the Nacos address, please update the configuration in the `spring-ai-alibaba-admin-server-start/src/main/resources/application.yml` file
@@ -85,23 +97,58 @@ nacos:
 ```
 
 ### 4. Start SAA Admin
-Execute the startup script in the root directory. This script will help you start the database-related services
+Run the startup script from the repository root. `start.sh` delegates to `scripts/admin-start.sh` and by default:
+
+1. Starts and verifies middleware
+2. Builds the full frontend assets, including App / Workflow, Knowledge, MCP, and Model Service pages
+3. Syncs frontend assets into backend `static`
+4. Packages and starts the backend service
+5. Waits for the health check to pass
 
 ```bash
-sh start.sh
+./start.sh
 ```
-Start the application in the spring-ai-alibaba-admin-server-start directory
+
+Common commands:
+
 ```bash
-mvn spring-boot:run
+./start.sh --skip-deps --restart      # restart Admin only when middleware is already running
+./start.sh --build --restart          # force rebuild frontend/backend and restart
+./start.sh --foreground               # run in foreground for live logs
+scripts/deps-stop.sh                  # stop middleware
 ```
 
 ### 5. Access the Application
 
-Open your browser and visit http://localhost:8080 to use the SAA Admin platform.
+Open your browser and visit http://localhost:8081/admin to use the SAA Admin platform.
 
-At this point, you can already manage, debug, evaluate, and observe prompts on the platform. If you expect your Spring AI Alibaba Agent application to integrate with Nacos for prompt loading and dynamic updates, and observe the online running status, you can refer to step 6 to configure your AI Agent application.
+Default login:
 
-### 6. Connect Your AI Agent Application
+- Username: `saa`
+- Password: `123456`
+
+Health check:
+
+```bash
+curl http://localhost:8081/actuator/health
+```
+
+If the sidebar is missing App / Workflow or Knowledge pages, hard refresh the browser first. If it is still missing, run `./start.sh --build --restart` to rebuild and sync the full frontend bundle.
+
+At this point, you can already manage, debug, evaluate, and observe prompts on the platform. If you expect your Spring AI Alibaba Agent application to integrate with Nacos for prompt loading and dynamic updates, and observe the online running status, you can refer to step 7 to configure your AI Agent application.
+
+### 6. Configure Model Services
+
+The default SQL includes Tongyi / Qwen model records, but real calls still require valid credentials. Configure model providers in the console:
+
+1. Log in to `http://localhost:8081/admin`
+2. Open Model Service Management
+3. Add an OpenAI-compatible provider with API Key and endpoint
+4. Add models with the correct types: `llm`, `text_embedding`, and optionally `rerank`
+
+Knowledge bases require a usable `text_embedding` model. `rerank` is optional; when omitted, retrieval uses vector search only.
+
+### 7. Connect Your AI Agent Application
 In your Spring AI Alibaba Agent application, add the following dependencies
 ```xml
 <dependencies>

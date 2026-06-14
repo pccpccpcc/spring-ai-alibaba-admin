@@ -1,0 +1,174 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 900" font-family="'SF Pro Display','Inter','Segoe UI',system-ui,sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f1117"/>
+      <stop offset="100%" stop-color="#181b25"/>
+    </linearGradient>
+    <linearGradient id="gApp" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f766e" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#0369a1" stop-opacity="0.12"/>
+    </linearGradient>
+    <linearGradient id="gJava" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0.17"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="gMiddleware" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d97706" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#f97316" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="gApi" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#db2777" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="gOps" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#475569" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#0891b2" stop-opacity="0.08"/>
+    </linearGradient>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#60a5fa"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#fbbf24"/>
+    </marker>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c084fc"/>
+    </marker>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect width="1240" height="900" fill="url(#bg)" rx="12"/>
+
+  <text x="620" y="42" text-anchor="middle" fill="#e2e8f0" font-size="22" font-weight="800">Spring AI Alibaba Admin · 对外依赖图</text>
+  <text x="620" y="66" text-anchor="middle" fill="#64748b" font-size="12">Key Java dependencies, middleware, external APIs, and operational dependencies</text>
+  <line x1="390" y1="78" x2="850" y2="78" stroke="#334155" stroke-width="1"/>
+
+  <!-- Application center -->
+  <rect x="390" y="120" width="460" height="128" rx="12" fill="url(#gApp)" stroke="#14b8a6" stroke-width="1.2" stroke-opacity="0.55" filter="url(#shadow)"/>
+  <text x="620" y="154" text-anchor="middle" fill="#99f6e4" font-size="17" font-weight="800">spring-ai-alibaba-admin</text>
+  <text x="620" y="180" text-anchor="middle" fill="#94a3b8" font-size="11">Backend modules: server-start / server-core / server-openapi / server-runtime</text>
+  <rect x="430" y="202" width="112" height="26" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="486" y="219" text-anchor="middle" fill="#cbd5e1" font-size="9">Java 17</text>
+  <rect x="554" y="202" width="132" height="26" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="620" y="219" text-anchor="middle" fill="#cbd5e1" font-size="9">Spring Boot 3.3.6</text>
+  <rect x="698" y="202" width="112" height="26" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="754" y="219" text-anchor="middle" fill="#cbd5e1" font-size="9">Spring AI 1.0.x</text>
+
+  <!-- Java dependencies -->
+  <rect x="40" y="300" width="360" height="430" rx="12" fill="url(#gJava)" stroke="#3b82f6" stroke-width="1.1" stroke-opacity="0.5"/>
+  <text x="64" y="328" fill="#60a5fa" font-size="13" font-weight="800" letter-spacing="1">KEY JAVA DEPENDENCIES</text>
+  <text x="64" y="348" fill="#64748b" font-size="10">关键框架、SDK、客户端库和运行时库</text>
+
+  <rect x="64" y="370" width="312" height="66" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="84" y="393" fill="#bfdbfe" font-size="11" font-weight="800">Core Framework</text>
+  <text x="84" y="411" fill="#94a3b8" font-size="9">Spring Boot · Spring Web · Validation · Actuator</text>
+  <text x="84" y="426" fill="#64748b" font-size="9">Spring AI BOM 1.0.3 · Spring AI Alibaba 1.0.x</text>
+
+  <rect x="64" y="452" width="312" height="76" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="84" y="475" fill="#bfdbfe" font-size="11" font-weight="800">Data / Integration</text>
+  <text x="84" y="493" fill="#94a3b8" font-size="9">MyBatis-Plus 3.5.9 · Druid 1.2.20 · JPA</text>
+  <text x="84" y="508" fill="#64748b" font-size="9">Redisson 3.27.2 · RocketMQ Client 5.0.7</text>
+  <text x="84" y="523" fill="#64748b" font-size="9">Elasticsearch Java 8.13.4 · Nacos Client 3.0.3</text>
+
+  <rect x="64" y="544" width="312" height="82" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="84" y="567" fill="#bfdbfe" font-size="11" font-weight="800">AI / RAG / Tooling</text>
+  <text x="84" y="585" fill="#94a3b8" font-size="9">Spring AI OpenAI / DeepSeek / Ollama</text>
+  <text x="84" y="600" fill="#64748b" font-size="9">Elasticsearch VectorStore · Tika/PDF/Markdown readers</text>
+  <text x="84" y="615" fill="#64748b" font-size="9">JGraphT · GraalVM JS/Python · MCP SDK 0.9.0</text>
+
+  <rect x="64" y="642" width="312" height="66" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="84" y="665" fill="#bfdbfe" font-size="11" font-weight="800">Security / API / Docs</text>
+  <text x="84" y="683" fill="#94a3b8" font-size="9">JJWT 0.12.6 · Argon2 · SpringDoc OpenAPI 2.6.0</text>
+  <text x="84" y="698" fill="#64748b" font-size="9">Swagger Parser · JSON Schema Validator · Jackson</text>
+
+  <!-- Middleware -->
+  <rect x="440" y="300" width="360" height="430" rx="12" fill="url(#gMiddleware)" stroke="#f59e0b" stroke-width="1.1" stroke-opacity="0.5"/>
+  <text x="464" y="328" fill="#fbbf24" font-size="13" font-weight="800" letter-spacing="1">MIDDLEWARE</text>
+  <text x="464" y="348" fill="#64748b" font-size="10">需要部署、连接和运维的运行时组件</text>
+
+  <rect x="464" y="370" width="136" height="68" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="532" y="394" text-anchor="middle" fill="#fde68a" font-size="12" font-weight="800">MySQL 8.0</text>
+  <text x="532" y="412" text-anchor="middle" fill="#94a3b8" font-size="9">业务数据 / 评测数据</text>
+
+  <rect x="620" y="370" width="136" height="68" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="688" y="394" text-anchor="middle" fill="#fde68a" font-size="12" font-weight="800">Redis 7.2</text>
+  <text x="688" y="412" text-anchor="middle" fill="#94a3b8" font-size="9">缓存 / Token / 锁</text>
+
+  <rect x="464" y="458" width="136" height="68" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="532" y="482" text-anchor="middle" fill="#fde68a" font-size="12" font-weight="800">Elasticsearch</text>
+  <text x="532" y="500" text-anchor="middle" fill="#94a3b8" font-size="9">Vector / Search / Trace</text>
+  <text x="532" y="515" text-anchor="middle" fill="#64748b" font-size="8.5">deploy: 9.1.2</text>
+
+  <rect x="620" y="458" width="136" height="68" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="688" y="482" text-anchor="middle" fill="#fde68a" font-size="12" font-weight="800">RocketMQ</text>
+  <text x="688" y="500" text-anchor="middle" fill="#94a3b8" font-size="9">异步文档索引</text>
+  <text x="688" y="515" text-anchor="middle" fill="#64748b" font-size="8.5">deploy: 5.3.2</text>
+
+  <rect x="464" y="546" width="136" height="68" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="532" y="570" text-anchor="middle" fill="#fde68a" font-size="12" font-weight="800">Nacos</text>
+  <text x="532" y="588" text-anchor="middle" fill="#94a3b8" font-size="9">配置 / Prompt 发布</text>
+
+  <rect x="620" y="546" width="136" height="68" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="688" y="570" text-anchor="middle" fill="#fde68a" font-size="12" font-weight="800">LoongCollector</text>
+  <text x="688" y="588" text-anchor="middle" fill="#94a3b8" font-size="9">OTLP Trace 采集</text>
+  <text x="688" y="603" text-anchor="middle" fill="#64748b" font-size="8.5">deploy: 3.1.4</text>
+
+  <rect x="464" y="634" width="292" height="56" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="610" y="657" text-anchor="middle" fill="#fde68a" font-size="12" font-weight="800">Kibana</text>
+  <text x="610" y="675" text-anchor="middle" fill="#94a3b8" font-size="9">Trace 可视化查询，连接 Elasticsearch</text>
+
+  <!-- External APIs -->
+  <rect x="840" y="300" width="360" height="430" rx="12" fill="url(#gApi)" stroke="#a855f7" stroke-width="1.1" stroke-opacity="0.5"/>
+  <text x="864" y="328" fill="#c084fc" font-size="13" font-weight="800" letter-spacing="1">EXTERNAL API / SYSTEMS</text>
+  <text x="864" y="348" fill="#64748b" font-size="10">HTTP / SDK / Protocol 调用的外部能力与系统</text>
+
+  <rect x="864" y="370" width="312" height="64" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="1020" y="394" text-anchor="middle" fill="#e9d5ff" font-size="12" font-weight="800">Model Providers</text>
+  <text x="1020" y="412" text-anchor="middle" fill="#94a3b8" font-size="9">DashScope / OpenAI-compatible / DeepSeek / Ollama</text>
+
+  <rect x="864" y="452" width="150" height="64" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="939" y="476" text-anchor="middle" fill="#e9d5ff" font-size="12" font-weight="800">Aliyun OSS</text>
+  <text x="939" y="494" text-anchor="middle" fill="#94a3b8" font-size="9">文件 / 文档对象存储</text>
+
+  <rect x="1026" y="452" width="150" height="64" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="1101" y="476" text-anchor="middle" fill="#e9d5ff" font-size="12" font-weight="800">MCP Servers</text>
+  <text x="1101" y="494" text-anchor="middle" fill="#94a3b8" font-size="9">工具服务器 / 协议交互</text>
+
+  <rect x="864" y="534" width="150" height="64" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="939" y="558" text-anchor="middle" fill="#e9d5ff" font-size="12" font-weight="800">External Agents</text>
+  <text x="939" y="576" text-anchor="middle" fill="#94a3b8" font-size="9">拉取 Prompt / 上报 Trace</text>
+
+  <rect x="1026" y="534" width="150" height="64" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="1101" y="558" text-anchor="middle" fill="#e9d5ff" font-size="12" font-weight="800">OTLP / ARMS</text>
+  <text x="1101" y="576" text-anchor="middle" fill="#94a3b8" font-size="9">外部可观测入口</text>
+
+  <rect x="864" y="616" width="312" height="74" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="1020" y="640" text-anchor="middle" fill="#e9d5ff" font-size="12" font-weight="800">OpenAI-Compatible APIs</text>
+  <text x="1020" y="658" text-anchor="middle" fill="#94a3b8" font-size="9">统一模型调用语义：Chat / Embedding / Rerank / Image</text>
+  <text x="1020" y="673" text-anchor="middle" fill="#64748b" font-size="8.5">具体 Provider 由配置和模型管理能力接入</text>
+
+  <!-- Platform / Observability -->
+  <rect x="110" y="766" width="1020" height="82" rx="12" fill="url(#gOps)" stroke="#64748b" stroke-width="1.1" stroke-opacity="0.55"/>
+  <text x="136" y="795" fill="#cbd5e1" font-size="13" font-weight="800" letter-spacing="1">PLATFORM / OBSERVABILITY</text>
+  <text x="136" y="818" fill="#94a3b8" font-size="10">Docker Compose · Kubernetes manifests · Spring Actuator · Micrometer OTLP · OpenTelemetry · ARMS Observation · Elasticsearch trace index</text>
+  <text x="136" y="835" fill="#64748b" font-size="9">此组不是业务功能依赖，而是部署、运维与可观测链路的关键支撑。</text>
+
+  <!-- Relationship arrows -->
+  <path d="M 390 190 C 300 220 240 248 220 300" fill="none" stroke="#60a5fa" stroke-width="1.3" stroke-opacity="0.65" marker-end="url(#arrowBlue)"/>
+  <text x="270" y="246" fill="#64748b" font-size="9">build / runtime libraries</text>
+
+  <path d="M 620 248 C 620 270 620 280 620 300" fill="none" stroke="#fbbf24" stroke-width="1.3" stroke-opacity="0.65" marker-end="url(#arrowAmber)"/>
+  <text x="635" y="282" fill="#64748b" font-size="9">connects to</text>
+
+  <path d="M 850 190 C 940 220 1000 248 1020 300" fill="none" stroke="#c084fc" stroke-width="1.3" stroke-opacity="0.65" marker-end="url(#arrowPurple)"/>
+  <text x="918" y="246" fill="#64748b" font-size="9">calls / integrates with</text>
+
+  <path d="M 620 248 C 620 500 620 650 620 766" fill="none" stroke="#94a3b8" stroke-width="1.1" stroke-opacity="0.42" marker-end="url(#arrowGray)"/>
+  <text x="634" y="746" fill="#64748b" font-size="9">observed / deployed by</text>
+
+  <text x="620" y="878" text-anchor="middle" fill="#334155" font-size="10">Grouped from Maven dependencies, application configuration, Docker Compose, and Kubernetes manifests</text>
+</svg>

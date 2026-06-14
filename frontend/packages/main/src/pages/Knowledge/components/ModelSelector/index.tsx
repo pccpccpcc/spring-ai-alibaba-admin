@@ -14,12 +14,14 @@ interface ModelSelectorProps {
   value?: string;
   modelType: string;
   onChange: (val: string, option?: SelectOption | SelectOption[]) => void;
+  allowClear?: boolean;
 }
 
 const ModelSelector: React.FC<ModelSelectorProps> = ({
   value,
   modelType,
   onChange,
+  allowClear,
 }) => {
   const [options, setOptions] = useState<SelectOption[]>([]);
 
@@ -42,7 +44,14 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
     });
   }, [modelType]);
 
-  return <Select value={value} onChange={onChange} options={options} />;
+  return (
+    <Select
+      value={value || undefined}
+      onChange={onChange}
+      options={options}
+      allowClear={allowClear}
+    />
+  );
 };
 
 export default ModelSelector;

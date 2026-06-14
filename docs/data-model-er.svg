@@ -1,0 +1,356 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3900" height="2920" viewBox="0 0 3900 2920" role="img" aria-label="核心数据模型 ER 图">
+<rect width="3900" height="2920" fill="#f5f7fb"/>
+<defs>
+  <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#101828" flood-opacity="0.13"/></filter>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1f6fd1"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#3b873e"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#d97706"/></marker>
+  <marker id="arrow-pink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#e83e72"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#8e44ad"/></marker>
+  <marker id="arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#555"/></marker>
+  <style>
+    .title{font:700 46px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;fill:#17172f}
+    .subtitle{font:600 25px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;fill:#7b7f8c}
+    .section-title{font:700 30px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif}
+    .card-title{font:700 28px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;fill:#fff}
+    .field{font:500 21px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;fill:#174074}
+    .edge-label{font:700 19px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;fill:#263241}
+    .legend{font:600 22px -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;fill:#4b5563}
+  </style>
+</defs>
+<text x="1950.0" y="68" text-anchor="middle" class="title">Spring AI Alibaba Admin - 核心数据模型总览图</text>
+<text x="1950.0" y="114" text-anchor="middle" class="subtitle">实线 = 强关联 / 显式 FK；虚线 = 逻辑关联（无 FK 约束）；卡片仅展示核心字段，完整字段见 docs/data-model.md</text>
+<rect x="50" y="140" width="2140" height="2460" rx="26" fill="none" stroke="#2f80ed" stroke-width="4" stroke-dasharray="18 13"/>
+<text x="88" y="192" class="section-title" fill="#2f80ed">schema: agentscope（账号 / 应用 / Agent 平台）</text>
+<rect x="2240" y="140" width="1560" height="2460" rx="26" fill="none" stroke="#f59e0b" stroke-width="4" stroke-dasharray="18 13"/>
+<text x="2278" y="192" class="section-title" fill="#f59e0b">schema: admin（Prompt / Evaluation 平台）</text>
+<g filter="url(#shadow)">
+<rect x="110" y="250" width="420" height="301" rx="18" fill="#e8f3ff" stroke="#2f80ed" stroke-width="3.5"/>
+<path d="M 110 268 Q 110 250 128 250 H 512 Q 530 250 530 268 V 314 H 110 Z" fill="#2f80ed"/>
+<text x="320.0" y="293" text-anchor="middle" class="card-title">account</text>
+<text x="140" y="352" class="field">key id : bigint</text>
+<text x="140" y="385" class="field">uk account_id : varchar</text>
+<text x="140" y="418" class="field">username / password</text>
+<text x="140" y="451" class="field">type / status</text>
+<text x="140" y="484" class="field">email / mobile / nickname</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="640" y="250" width="420" height="268" rx="18" fill="#e8f3ff" stroke="#2f80ed" stroke-width="3.5"/>
+<path d="M 640 268 Q 640 250 658 250 H 1042 Q 1060 250 1060 268 V 314 H 640 Z" fill="#2f80ed"/>
+<text x="850.0" y="293" text-anchor="middle" class="card-title">api_key</text>
+<text x="670" y="352" class="field">key id : bigint</text>
+<text x="670" y="385" class="field">fk account_id : varchar</text>
+<text x="670" y="418" class="field">uk api_key : varchar</text>
+<text x="670" y="451" class="field">status / description</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1170" y="250" width="420" height="301" rx="18" fill="#eaf7ec" stroke="#4caf50" stroke-width="3.5"/>
+<path d="M 1170 268 Q 1170 250 1188 250 H 1572 Q 1590 250 1590 268 V 314 H 1170 Z" fill="#4caf50"/>
+<text x="1380.0" y="293" text-anchor="middle" class="card-title">knowledge_base</text>
+<text x="1200" y="352" class="field">key id : bigint</text>
+<text x="1200" y="385" class="field">uk kb_id : varchar</text>
+<text x="1200" y="418" class="field">fk workspace_id : varchar</text>
+<text x="1200" y="451" class="field">name / type / status</text>
+<text x="1200" y="484" class="field">process / index / search</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1700" y="250" width="420" height="268" rx="18" fill="#f7e9fb" stroke="#a855c7" stroke-width="3.5"/>
+<path d="M 1700 268 Q 1700 250 1718 250 H 2102 Q 2120 250 2120 268 V 314 H 1700 Z" fill="#a855c7"/>
+<text x="1910.0" y="293" text-anchor="middle" class="card-title">provider</text>
+<text x="1730" y="352" class="field">key id : bigint</text>
+<text x="1730" y="385" class="field">provider : varchar</text>
+<text x="1730" y="418" class="field">fk workspace_id : varchar</text>
+<text x="1730" y="451" class="field">credential / protocol</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="110" y="700" width="420" height="301" rx="18" fill="#e8f3ff" stroke="#2f80ed" stroke-width="3.5"/>
+<path d="M 110 718 Q 110 700 128 700 H 512 Q 530 700 530 718 V 764 H 110 Z" fill="#2f80ed"/>
+<text x="320.0" y="743" text-anchor="middle" class="card-title">workspace</text>
+<text x="140" y="802" class="field">key id : bigint</text>
+<text x="140" y="835" class="field">uk workspace_id : varchar</text>
+<text x="140" y="868" class="field">fk account_id : varchar</text>
+<text x="140" y="901" class="field">name / description</text>
+<text x="140" y="934" class="field">status / config</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="640" y="700" width="420" height="301" rx="18" fill="#e8f3ff" stroke="#2f80ed" stroke-width="3.5"/>
+<path d="M 640 718 Q 640 700 658 700 H 1042 Q 1060 700 1060 718 V 764 H 640 Z" fill="#2f80ed"/>
+<text x="850.0" y="743" text-anchor="middle" class="card-title">application</text>
+<text x="670" y="802" class="field">key id : bigint</text>
+<text x="670" y="835" class="field">uk app_id : varchar</text>
+<text x="670" y="868" class="field">fk workspace_id : varchar</text>
+<text x="670" y="901" class="field">name / type / status</text>
+<text x="670" y="934" class="field">source / icon</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1170" y="700" width="420" height="334" rx="18" fill="#eaf7ec" stroke="#4caf50" stroke-width="3.5"/>
+<path d="M 1170 718 Q 1170 700 1188 700 H 1572 Q 1590 700 1590 718 V 764 H 1170 Z" fill="#4caf50"/>
+<text x="1380.0" y="743" text-anchor="middle" class="card-title">document</text>
+<text x="1200" y="802" class="field">key id : bigint</text>
+<text x="1200" y="835" class="field">uk doc_id : varchar</text>
+<text x="1200" y="868" class="field">fk kb_id : varchar</text>
+<text x="1200" y="901" class="field">type / format / size</text>
+<text x="1200" y="934" class="field">index_status / parsed_path</text>
+<text x="1200" y="967" class="field">chunks -&gt; vector index</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1700" y="700" width="420" height="268" rx="18" fill="#f7e9fb" stroke="#a855c7" stroke-width="3.5"/>
+<path d="M 1700 718 Q 1700 700 1718 700 H 2102 Q 2120 700 2120 718 V 764 H 1700 Z" fill="#a855c7"/>
+<text x="1910.0" y="743" text-anchor="middle" class="card-title">model</text>
+<text x="1730" y="802" class="field">key id : bigint</text>
+<text x="1730" y="835" class="field">model_id : varchar</text>
+<text x="1730" y="868" class="field">fk provider : varchar</text>
+<text x="1730" y="901" class="field">type / mode / tags</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="110" y="1150" width="420" height="301" rx="18" fill="#eceeff" stroke="#6470c8" stroke-width="3.5"/>
+<path d="M 110 1168 Q 110 1150 128 1150 H 512 Q 530 1150 530 1168 V 1214 H 110 Z" fill="#6470c8"/>
+<text x="320.0" y="1193" text-anchor="middle" class="card-title">application_component</text>
+<text x="140" y="1252" class="field">key id : bigint</text>
+<text x="140" y="1285" class="field">code : varchar</text>
+<text x="140" y="1318" class="field">fk workspace_id : varchar</text>
+<text x="140" y="1351" class="field">fk app_id : varchar</text>
+<text x="140" y="1384" class="field">type / config / status</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="640" y="1150" width="420" height="301" rx="18" fill="#e8f3ff" stroke="#2f80ed" stroke-width="3.5"/>
+<path d="M 640 1168 Q 640 1150 658 1150 H 1042 Q 1060 1150 1060 1168 V 1214 H 640 Z" fill="#2f80ed"/>
+<text x="850.0" y="1193" text-anchor="middle" class="card-title">application_version</text>
+<text x="670" y="1252" class="field">key id : bigint</text>
+<text x="670" y="1285" class="field">fk app_id : varchar</text>
+<text x="670" y="1318" class="field">version : varchar</text>
+<text x="670" y="1351" class="field">config : longtext</text>
+<text x="670" y="1384" class="field">status / description</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1170" y="1150" width="420" height="301" rx="18" fill="#fff8d9" stroke="#f59e0b" stroke-width="3.5"/>
+<path d="M 1170 1168 Q 1170 1150 1188 1150 H 1572 Q 1590 1150 1590 1168 V 1214 H 1170 Z" fill="#f59e0b"/>
+<text x="1380.0" y="1193" text-anchor="middle" class="card-title">plugin</text>
+<text x="1200" y="1252" class="field">key id : bigint</text>
+<text x="1200" y="1285" class="field">uk plugin_id : varchar</text>
+<text x="1200" y="1318" class="field">fk workspace_id : varchar</text>
+<text x="1200" y="1351" class="field">name / type / source</text>
+<text x="1200" y="1384" class="field">config / status</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1700" y="1150" width="420" height="268" rx="18" fill="#e5fbfd" stroke="#20b9c7" stroke-width="3.5"/>
+<path d="M 1700 1168 Q 1700 1150 1718 1150 H 2102 Q 2120 1150 2120 1168 V 1214 H 1700 Z" fill="#20b9c7"/>
+<text x="1910.0" y="1193" text-anchor="middle" class="card-title">mcp_server</text>
+<text x="1730" y="1252" class="field">key id : bigint</text>
+<text x="1730" y="1285" class="field">server_code / name</text>
+<text x="1730" y="1318" class="field">workspace_id / account_id</text>
+<text x="1730" y="1351" class="field">type / install / status</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="110" y="1600" width="420" height="301" rx="18" fill="#fff0f6" stroke="#e83e72" stroke-width="3.5"/>
+<path d="M 110 1618 Q 110 1600 128 1600 H 512 Q 530 1600 530 1618 V 1664 H 110 Z" fill="#e83e72"/>
+<text x="320.0" y="1643" text-anchor="middle" class="card-title">reference</text>
+<text x="140" y="1702" class="field">key id : bigint</text>
+<text x="140" y="1735" class="field">main_code / main_type</text>
+<text x="140" y="1768" class="field">refer_code / refer_type</text>
+<text x="140" y="1801" class="field">fk workspace_id : varchar</text>
+<text x="140" y="1834" class="field">resource references</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="640" y="1600" width="420" height="301" rx="18" fill="#eceeff" stroke="#6470c8" stroke-width="3.5"/>
+<path d="M 640 1618 Q 640 1600 658 1600 H 1042 Q 1060 1600 1060 1618 V 1664 H 640 Z" fill="#6470c8"/>
+<text x="850.0" y="1643" text-anchor="middle" class="card-title">agent_schema</text>
+<text x="670" y="1702" class="field">key id : bigint</text>
+<text x="670" y="1735" class="field">uk agent_id : varchar</text>
+<text x="670" y="1768" class="field">fk workspace_id : varchar</text>
+<text x="670" y="1801" class="field">type / status / enabled</text>
+<text x="670" y="1834" class="field">yaml_schema / sub_agents</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="1170" y="1600" width="420" height="301" rx="18" fill="#fff8d9" stroke="#f59e0b" stroke-width="3.5"/>
+<path d="M 1170 1618 Q 1170 1600 1188 1600 H 1572 Q 1590 1600 1590 1618 V 1664 H 1170 Z" fill="#f59e0b"/>
+<text x="1380.0" y="1643" text-anchor="middle" class="card-title">tool</text>
+<text x="1200" y="1702" class="field">key id : bigint</text>
+<text x="1200" y="1735" class="field">uk tool_id : varchar</text>
+<text x="1200" y="1768" class="field">fk plugin_id : varchar</text>
+<text x="1200" y="1801" class="field">api_schema : longtext</text>
+<text x="1200" y="1834" class="field">enabled / test_status</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="2320" y="250" width="420" height="268" rx="18" fill="#fff4df" stroke="#f59e0b" stroke-width="3.5"/>
+<path d="M 2320 268 Q 2320 250 2338 250 H 2722 Q 2740 250 2740 268 V 314 H 2320 Z" fill="#f59e0b"/>
+<text x="2530.0" y="293" text-anchor="middle" class="card-title">prompt</text>
+<text x="2350" y="352" class="field">key id : bigint</text>
+<text x="2350" y="385" class="field">uk prompt_key : varchar</text>
+<text x="2350" y="418" class="field">prompt_desc / tags</text>
+<text x="2350" y="451" class="field">latest_version</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="2920" y="250" width="420" height="301" rx="18" fill="#fff4df" stroke="#f59e0b" stroke-width="3.5"/>
+<path d="M 2920 268 Q 2920 250 2938 250 H 3322 Q 3340 250 3340 268 V 314 H 2920 Z" fill="#f59e0b"/>
+<text x="3130.0" y="293" text-anchor="middle" class="card-title">prompt_version</text>
+<text x="2950" y="352" class="field">key id : bigint</text>
+<text x="2950" y="385" class="field">fk prompt_key : varchar</text>
+<text x="2950" y="418" class="field">version : varchar</text>
+<text x="2950" y="451" class="field">template / variables</text>
+<text x="2950" y="484" class="field">model_config / status</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="2320" y="650" width="420" height="268" rx="18" fill="#fff4df" stroke="#f59e0b" stroke-width="3.5"/>
+<path d="M 2320 668 Q 2320 650 2338 650 H 2722 Q 2740 650 2740 668 V 714 H 2320 Z" fill="#f59e0b"/>
+<text x="2530.0" y="693" text-anchor="middle" class="card-title">prompt_build_template</text>
+<text x="2350" y="752" class="field">key id : bigint</text>
+<text x="2350" y="785" class="field">uk template_key : varchar</text>
+<text x="2350" y="818" class="field">template / variables</text>
+<text x="2350" y="851" class="field">model_config / tags</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="2920" y="650" width="420" height="268" rx="18" fill="#f7e9fb" stroke="#a855c7" stroke-width="3.5"/>
+<path d="M 2920 668 Q 2920 650 2938 650 H 3322 Q 3340 650 3340 668 V 714 H 2920 Z" fill="#a855c7"/>
+<text x="3130.0" y="693" text-anchor="middle" class="card-title">model_config</text>
+<text x="2950" y="752" class="field">key id : bigint</text>
+<text x="2950" y="785" class="field">uk name : varchar</text>
+<text x="2950" y="818" class="field">provider / model_name</text>
+<text x="2950" y="851" class="field">base_url / api_key</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="2320" y="1050" width="420" height="268" rx="18" fill="#fff4df" stroke="#f59e0b" stroke-width="3.5"/>
+<path d="M 2320 1068 Q 2320 1050 2338 1050 H 2722 Q 2740 1050 2740 1068 V 1114 H 2320 Z" fill="#f59e0b"/>
+<text x="2530.0" y="1093" text-anchor="middle" class="card-title">dataset</text>
+<text x="2350" y="1152" class="field">key id : bigint</text>
+<text x="2350" y="1185" class="field">name / description</text>
+<text x="2350" y="1218" class="field">columns_config : json</text>
+<text x="2350" y="1251" class="field">deleted</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="2920" y="1050" width="420" height="268" rx="18" fill="#fff4df" stroke="#f59e0b" stroke-width="3.5"/>
+<path d="M 2920 1068 Q 2920 1050 2938 1050 H 3322 Q 3340 1050 3340 1068 V 1114 H 2920 Z" fill="#f59e0b"/>
+<text x="3130.0" y="1093" text-anchor="middle" class="card-title">dataset_version</text>
+<text x="2950" y="1152" class="field">key id : bigint</text>
+<text x="2950" y="1185" class="field">fk dataset_id : bigint</text>
+<text x="2950" y="1218" class="field">version / data_count</text>
+<text x="2950" y="1251" class="field">status / snapshot refs</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="2320" y="1450" width="420" height="235" rx="18" fill="#fff4df" stroke="#f59e0b" stroke-width="3.5"/>
+<path d="M 2320 1468 Q 2320 1450 2338 1450 H 2722 Q 2740 1450 2740 1468 V 1514 H 2320 Z" fill="#f59e0b"/>
+<text x="2530.0" y="1493" text-anchor="middle" class="card-title">evaluator</text>
+<text x="2350" y="1552" class="field">key id : bigint</text>
+<text x="2350" y="1585" class="field">name / description</text>
+<text x="2350" y="1618" class="field">deleted</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="2920" y="1450" width="420" height="301" rx="18" fill="#fff4df" stroke="#f59e0b" stroke-width="3.5"/>
+<path d="M 2920 1468 Q 2920 1450 2938 1450 H 3322 Q 3340 1450 3340 1468 V 1514 H 2920 Z" fill="#f59e0b"/>
+<text x="3130.0" y="1493" text-anchor="middle" class="card-title">dataset_item</text>
+<text x="2950" y="1552" class="field">key id : bigint</text>
+<text x="2950" y="1585" class="field">fk dataset_id : bigint</text>
+<text x="2950" y="1618" class="field">columns_config : json</text>
+<text x="2950" y="1651" class="field">data_content : json</text>
+<text x="2950" y="1684" class="field">deleted</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="2320" y="1850" width="420" height="301" rx="18" fill="#fff4df" stroke="#f59e0b" stroke-width="3.5"/>
+<path d="M 2320 1868 Q 2320 1850 2338 1850 H 2722 Q 2740 1850 2740 1868 V 1914 H 2320 Z" fill="#f59e0b"/>
+<text x="2530.0" y="1893" text-anchor="middle" class="card-title">evaluator_version</text>
+<text x="2350" y="1952" class="field">key id : bigint</text>
+<text x="2350" y="1985" class="field">fk evaluator_id : bigint</text>
+<text x="2350" y="2018" class="field">version / status</text>
+<text x="2350" y="2051" class="field">prompt / variables</text>
+<text x="2350" y="2084" class="field">model_config</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="2920" y="1850" width="420" height="268" rx="18" fill="#fff4df" stroke="#f59e0b" stroke-width="3.5"/>
+<path d="M 2920 1868 Q 2920 1850 2938 1850 H 3322 Q 3340 1850 3340 1868 V 1914 H 2920 Z" fill="#f59e0b"/>
+<text x="3130.0" y="1893" text-anchor="middle" class="card-title">evaluator_template</text>
+<text x="2950" y="1952" class="field">key id : bigint</text>
+<text x="2950" y="1985" class="field">uk template_key : varchar</text>
+<text x="2950" y="2018" class="field">template / variables</text>
+<text x="2950" y="2051" class="field">model_config</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="2320" y="2200" width="420" height="268" rx="18" fill="#fff0f6" stroke="#e83e72" stroke-width="3.5"/>
+<path d="M 2320 2218 Q 2320 2200 2338 2200 H 2722 Q 2740 2200 2740 2218 V 2264 H 2320 Z" fill="#e83e72"/>
+<text x="2530.0" y="2243" text-anchor="middle" class="card-title">experiment_result</text>
+<text x="2350" y="2302" class="field">key id : bigint</text>
+<text x="2350" y="2335" class="field">fk experiment_id</text>
+<text x="2350" y="2368" class="field">fk evaluator_version_id</text>
+<text x="2350" y="2401" class="field">score / reason</text>
+</g>
+<g filter="url(#shadow)">
+<rect x="2920" y="2200" width="420" height="301" rx="18" fill="#fff0f6" stroke="#e83e72" stroke-width="3.5"/>
+<path d="M 2920 2218 Q 2920 2200 2938 2200 H 3322 Q 3340 2200 3340 2218 V 2264 H 2920 Z" fill="#e83e72"/>
+<text x="3130.0" y="2243" text-anchor="middle" class="card-title">experiment</text>
+<text x="2950" y="2302" class="field">key id : bigint</text>
+<text x="2950" y="2335" class="field">fk dataset_version_id</text>
+<text x="2950" y="2368" class="field">evaluation_config</text>
+<text x="2950" y="2401" class="field">evaluator_config</text>
+<text x="2950" y="2434" class="field">status / progress</text>
+</g>
+<path d="M 546.0 394.0 C 585.0 394.0, 585.0 390.5, 624.0 390.5" fill="none" stroke="#1f6fd1" stroke-width="3.6" opacity="0.82" marker-end="url(#arrow-blue)"/>
+<path d="M 320.0 567.0 C 320.0 567.0, 320.0 684.0, 320.0 684.0" fill="none" stroke="#1f6fd1" stroke-width="3.6" opacity="0.82" marker-end="url(#arrow-blue)"/>
+<path d="M 546.0 850.5 C 585.0 850.5, 585.0 850.5, 624.0 850.5" fill="none" stroke="#1f6fd1" stroke-width="3.6" opacity="0.82" marker-end="url(#arrow-blue)"/>
+<path d="M 850.0 1017.0 C 850.0 1017.0, 850.0 1134.0, 850.0 1134.0" fill="none" stroke="#1f6fd1" stroke-width="3.6" opacity="0.82" marker-end="url(#arrow-blue)"/>
+<path d="M 672.7 1017.0 C 585.0 1017.0, 585.0 1134.0, 497.3 1134.0" fill="none" stroke="#555" stroke-width="3.6" opacity="0.82" stroke-dasharray="12 10" marker-end="url(#arrow-gray)"/>
+<path d="M 320.0 1467.0 C 320.0 1467.0, 320.0 1584.0, 320.0 1584.0" fill="none" stroke="#e83e72" stroke-width="3.6" opacity="0.82" marker-end="url(#arrow-pink)"/>
+<path d="M 408.6 1017.0 C 585.0 1017.0, 585.0 1584.0, 761.4 1584.0" fill="none" stroke="#555" stroke-width="3.6" opacity="0.82" stroke-dasharray="12 10" marker-end="url(#arrow-gray)"/>
+<path d="M 1380.0 567.0 C 1380.0 567.0, 1380.0 684.0, 1380.0 684.0" fill="none" stroke="#3b873e" stroke-width="3.6" opacity="0.82" marker-end="url(#arrow-green)"/>
+<path d="M 1380.0 1467.0 C 1380.0 1467.0, 1380.0 1584.0, 1380.0 1584.0" fill="none" stroke="#d97706" stroke-width="3.6" opacity="0.82" marker-end="url(#arrow-orange)"/>
+<path d="M 1910.0 534.0 C 1910.0 534.0, 1910.0 684.0, 1910.0 684.0" fill="none" stroke="#8e44ad" stroke-width="3.6" opacity="0.82" marker-end="url(#arrow-purple)"/>
+<path d="M 546.0 761.3 C 850.0 761.3, 850.0 489.7, 1154.0 489.7" fill="none" stroke="#555" stroke-width="3.6" opacity="0.82" stroke-dasharray="12 10" marker-end="url(#arrow-gray)"/>
+<path d="M 546.0 939.7 C 850.0 939.7, 850.0 1211.3, 1154.0 1211.3" fill="none" stroke="#555" stroke-width="3.6" opacity="0.82" stroke-dasharray="12 10" marker-end="url(#arrow-gray)"/>
+<path d="M 546.0 788.9 C 1115.0 788.9, 1115.0 445.6, 1684.0 445.6" fill="none" stroke="#555" stroke-width="3.6" opacity="0.82" stroke-dasharray="12 10" marker-end="url(#arrow-gray)"/>
+<path d="M 546.0 907.8 C 1115.0 907.8, 1115.0 1226.7, 1684.0 1226.7" fill="none" stroke="#555" stroke-width="3.6" opacity="0.82" stroke-dasharray="12 10" marker-end="url(#arrow-gray)"/>
+<path d="M 2756.0 389.8 C 2830.0 389.8, 2830.0 394.7, 2904.0 394.7" fill="none" stroke="#d97706" stroke-width="3.6" opacity="0.82" marker-end="url(#arrow-orange)"/>
+<path d="M 2756.0 1184.0 C 2830.0 1184.0, 2830.0 1184.0, 2904.0 1184.0" fill="none" stroke="#d97706" stroke-width="3.6" opacity="0.82" marker-end="url(#arrow-orange)"/>
+<path d="M 3130.0 1334.0 C 3130.0 1334.0, 3130.0 1434.0, 3130.0 1434.0" fill="none" stroke="#d97706" stroke-width="3.6" opacity="0.82" marker-end="url(#arrow-orange)"/>
+<path d="M 2530.0 1701.0 C 2530.0 1701.0, 2530.0 1834.0, 2530.0 1834.0" fill="none" stroke="#d97706" stroke-width="3.6" opacity="0.82" marker-end="url(#arrow-orange)"/>
+<path d="M 3358.0 1205.4 C 3685.0 1205.4, 3685.0 2350.5, 3358.0 2350.5" fill="none" stroke="#555" stroke-width="3.6" opacity="0.82" stroke-dasharray="12 10" marker-end="url(#arrow-gray)"/>
+<path d="M 2756.0 2123.0 C 2830.0 2123.0, 2830.0 2228.0, 2904.0 2228.0" fill="none" stroke="#555" stroke-width="3.6" opacity="0.82" stroke-dasharray="12 10" marker-end="url(#arrow-gray)"/>
+<path d="M 2904.0 2344.7 C 2830.0 2344.7, 2830.0 2339.8, 2756.0 2339.8" fill="none" stroke="#e83e72" stroke-width="3.6" opacity="0.82" marker-end="url(#arrow-pink)"/>
+<rect x="553.0" y="372.2" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="585.0" y="397.2" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="288.0" y="605.5" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="320.0" y="630.5" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="553.0" y="830.5" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="585.0" y="855.5" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="818.0" y="1055.5" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="850.0" y="1080.5" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="553.0" y="1055.5" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="585.0" y="1080.5" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="288.0" y="1505.5" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="320.0" y="1530.5" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="553.0" y="1280.5" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="585.0" y="1305.5" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="1348.0" y="605.5" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="1380.0" y="630.5" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="1348.0" y="1505.5" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="1380.0" y="1530.5" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="1878.0" y="589.0" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="1910.0" y="614.0" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="818.0" y="605.5" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="850.0" y="630.5" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="818.0" y="1055.5" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="850.0" y="1080.5" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="1083.0" y="597.2" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="1115.0" y="622.2" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="1083.0" y="1047.2" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="1115.0" y="1072.2" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="2798.0" y="372.2" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="2830.0" y="397.2" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="2798.0" y="1164.0" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="2830.0" y="1189.0" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="3098.0" y="1364.0" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="3130.0" y="1389.0" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="2498.0" y="1747.5" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="2530.0" y="1772.5" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="3633.0" y="1758.0" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="3665.0" y="1783.0" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="2798.0" y="2155.5" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="2830.0" y="2180.5" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="2798.0" y="2322.2" width="64" height="34" rx="10" fill="#ffffff" stroke="#d7dde8" opacity="0.96"/>
+<text x="2830.0" y="2347.2" text-anchor="middle" class="edge-label">1:N</text>
+<rect x="50" y="2660" width="3700" height="130" rx="22" fill="#eef3f8" stroke="#cbd5e1" stroke-width="2"/>
+<text x="80" y="2710" class="legend">图例：</text>
+<line x1="180" y1="2702" x2="300" y2="2702" stroke="#1f6fd1" stroke-width="5" marker-end="url(#arrow-blue)"/>
+<text x="328" y="2711" class="legend">强关联 / 显式 FK</text>
+<line x1="630" y1="2702" x2="750" y2="2702" stroke="#555" stroke-width="5" stroke-dasharray="12 10" marker-end="url(#arrow-gray)"/>
+<text x="778" y="2711" class="legend">逻辑关联（无 FK 约束）</text>
+<text x="80" y="2756" class="legend">key = 主键 / 唯一业务键；uk = 唯一业务键；fk = 外键或逻辑外键；1:N 为关系基数；完整字段、枚举和约束见数据字典。</text>
+<text x="2100" y="2756" class="legend">颜色：蓝=账号/应用，绿=知识库，橙=工具/评测，紫=模型，粉=引用/实验，青=MCP</text>
+</svg>

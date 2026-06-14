@@ -1,6 +1,11 @@
 import $i18n from '@/i18n';
-import { ICreateModelParams, IModel, MODEL_TAGS } from '@/types/modelService';
-import { Button, Checkbox, Form, Input, Modal } from '@spark-ai/design';
+import {
+  ICreateModelParams,
+  IModel,
+  MODEL_TAGS,
+  MODEL_TYPES,
+} from '@/types/modelService';
+import { Button, Checkbox, Form, Input, Modal, Select } from '@spark-ai/design';
 import React, { useEffect } from 'react';
 import styles from './index.module.less';
 
@@ -22,15 +27,26 @@ const ModelConfigModal: React.FC<ModelConfigModalProps> = ({
   const [form] = Form.useForm();
   const isEdit = !!model?.model_id;
 
+  const inferModelType = (tags?: string[]) => {
+    if (tags?.includes('embedding')) {
+      return 'text_embedding';
+    }
+    return 'llm';
+  };
+
   useEffect(() => {
     if (open) {
       if (model) {
         form.setFieldsValue({
           name: model.name || '',
+          type: model.type || inferModelType(model.tags),
           tags: model.tags || [],
         });
       } else {
         form.resetFields();
+        form.setFieldsValue({
+          type: 'llm',
+        });
       }
     }
   }, [open, model, form]);
@@ -41,6 +57,7 @@ const ModelConfigModal: React.FC<ModelConfigModalProps> = ({
         ...(model || {}),
         name: values.name,
         model_id: values.name,
+        type: values.type,
         tags: values.tags,
       };
       onOk(_model);
@@ -105,6 +122,29 @@ const ModelConfigModal: React.FC<ModelConfigModalProps> = ({
               })}
               maxLength={50}
               showCount
+            />
+          </Form.Item>
+          <Form.Item
+            name="type"
+            label={$i18n.get({
+              id: 'main.pages.Setting.ModelService.components.ModelConfigModal.index.modelType',
+              dm: '模型类型',
+            })}
+            rules={[
+              {
+                required: true,
+                message: $i18n.get({
+                  id: 'main.pages.Setting.ModelService.components.ModelConfigModal.index.selectModelType',
+                  dm: '请选择模型类型',
+                }),
+              },
+            ]}
+          >
+            <Select
+              options={Object.entries(MODEL_TYPES).map(([key, value]) => ({
+                label: value,
+                value: key,
+              }))}
             />
           </Form.Item>
           <Form.Item
