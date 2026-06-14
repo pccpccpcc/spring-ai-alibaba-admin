@@ -53,8 +53,7 @@ class PasswordCryptTest {
 	@Test
 	void match() {
 		String password = "123456";
-		// 故意断言失败，用于演示 CI 失败场景。验证完请把这行还原回 assertTrue。
-		assertFalse(PasswordCryptUtils.match(password, PasswordCryptUtils.encode(password)));
+		assertTrue(PasswordCryptUtils.match(password, PasswordCryptUtils.encode(password)));
 	}
 
 }
