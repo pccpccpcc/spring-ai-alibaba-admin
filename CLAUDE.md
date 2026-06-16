@@ -8,12 +8,14 @@ Spring AI Alibaba Admin 是一个基于 Spring AI Alibaba 的 AI Agent 开发、
 
 详细资料入口：
 
+- **文档总入口（先看这个）：[docs/README.md](docs/README.md)** —— 所有文档的分类地图、一句话说明和按角色的阅读路径。
 - 架构图：[docs/architecture.svg](docs/architecture.svg)
 - 内部模块依赖图：[docs/module-deps.svg](docs/module-deps.svg)
 - 外部依赖图：[docs/external-dependencies.svg](docs/external-dependencies.svg)
 - REST 接口清单：[docs/api-list.md](docs/api-list.md)
 - 数据模型与数据字典：[docs/data-model.md](docs/data-model.md)
 - 数据模型 ER 图：[docs/data-model-er.svg](docs/data-model-er.svg)
+- 测试运行指南：[docs/testing-guide.md](docs/testing-guide.md) | 新人 Setup：[docs/setup-guide.md](docs/setup-guide.md)
 
 ## 事实来源优先级
 
@@ -80,6 +82,27 @@ Spring AI Alibaba Admin 是一个基于 Spring AI Alibaba 的 AI Agent 开发、
 - 改 Maven 模块依赖、包边界或启动模块职责时，同步检查 [docs/module-deps.svg](docs/module-deps.svg) 和本文件的“核心架构”。
 - 改中间件、外部 API、部署依赖或配置中心相关内容时，同步检查 [docs/external-dependencies.svg](docs/external-dependencies.svg) 和“怎么跑”。
 - 新增长期有效的项目约定时，优先补充本文件；临时讨论、概念问答或一次性说明放到 `docs/qa/` 更合适。
+
+## 需求到实现的标准化流程
+
+任何新需求 / 改造，从需求到写代码之间，**必须依次完成 4 个阶段**，每阶段有强制产出物和确认 gate，**缺一不可，未完成不得写实现代码**。执行器为 skill `requirement-to-implementation`（[.claude/skills/requirement-to-implementation/SKILL.md](.claude/skills/requirement-to-implementation/SKILL.md)）：以 TaskCreate 跟踪 4 阶段、每阶段产出后暂停等确认、检查产出物作 gate。
+
+| 阶段 | 强制产出物（gate） | 确认点 | 模板 |
+|---|---|---|---|
+| 1. 需求定义 | `docs/requirements/*.md`：业务目标 / 场景痛点 / 接口契约 / 边界场景，**边界场景全部定稿（无"待决策"遗留）** | 需求对不对 | `_templates/requirement.md` |
+| 2. 影响分析 | `*-impact.md`：链路图 + 节点三态表（✅现有/🆕新增/✏️修改）+ **死代码识别** + 流程图（调用链 / 数据流 / schema）+ 测试策略 + 文档同步清单 | 影响面 / 死代码 | `_templates/impact.md` |
+| 3. 方案规划 | impact 续：风险表（多维，每条带**核实依据**+等级）+ 改造步骤（依赖排序 + 工作量 + 决策标注） | 风险 / 步骤 / 工作量 | 同 impact |
+| 4. 整合评审 | `*-solution.md`：整合前述产出 + **决策集中**（A 待拍板 / B 已定稿） | A 组决策 | `_templates/solution.md` |
+
+横切检查（每阶段都要带，不是独立阶段）：测试策略、文档同步清单。
+
+铁律：
+- 4 个产出物缺任何一个，不得写实现代码。
+- 边界场景必须"能由入参真实触发"，剔除伪场景。
+- 节点必须标三态，死代码必须识别（避免误改 / 误同步）。
+- 风险每条必须有核实依据，不能拍脑袋。
+- 图表源码先 preview 验证再落盘，不接受未验证的 mermaid。
+- 决策集中到 solution 第 7 节统一审核，不散落在各处。
 
 ## 怎么跑
 
@@ -184,10 +207,16 @@ BACK_END=java npm run build:app
 
 CI 配置在 `.github/workflows/ci.yml`，`push`/`pull_request` 到 `main` 时自动跑 `mvn test`。CI 在干净 Ubuntu runner 上用 `docker/middleware/docker-compose.ci.yml` 起一套**真实**的 MySQL + Redis + RocketMQ（非 mock、非 Testcontainers），集成测试通过 `TEST_*` 环境变量连它们——和本地共用同一份测试代码。改中间件相关测试时，确保本地和 CI 两套连接参数都能跑通。RocketMQ 必须在 CI 真起：`DocumentServiceImpl` 构造期注入 `Producer`，context 启动即依赖 RocketMQ，无法只连 MySQL+Redis。
 
+> 上游 `origin`（spring-ai-alibaba/spring-ai-alibaba-admin）已于 2026-01 归档只读，无法 push；CI 实际在个人 fork 上跑。首次推送 CI 的完整流程与坑（建 fork、开 Actions、fork 内开 PR、base repository 选 fork、git 身份）见 [docs/testing-guide.md](docs/testing-guide.md) 第 7.6 节。
+
 ## 禁区
 
 待补充。
 
 ## 历史包袱
 
-待补充。
+- **死代码：`PromptDetailModal.jsx` + `VersionHistoryModal.jsx`**（前端 legacy）
+  - `frontend/packages/main/src/legacy/components/PromptDetailModal.jsx` 全仓无任何引用（grep 零结果，2026-06 核实）；挂在 `/admin/prompt-detail` 路由下的是另一个文件 `legacy/pages/prompts/prompt-detail/prompt-detail.jsx`，不是它。
+  - 它引用的 `legacy/components/VersionHistoryModal.jsx`（版本历史弹窗）随之也是死代码，当前 UI 不可达。这是 legacy 早期"Prompt 详情弹窗 + 子版本历史弹窗"形态的残留，后被整页 `prompt-detail.jsx` + `/version-history` 整页方案取代。
+  - 处理建议：可安全删除这两个文件，删除前再 grep 一次确认无动态引用（如 `React.lazy` 字符串引用）。
+  - ⚠️ 易混淆：`legacy/components/VersionCompareModal.jsx`（版本**对比**弹窗）是活的，被 `legacy/pages/prompts/version-history/version-history.jsx:883` 使用，**不要**误删。注意区分 `VersionHistoryModal`（死）与 `VersionCompareModal`（活）。

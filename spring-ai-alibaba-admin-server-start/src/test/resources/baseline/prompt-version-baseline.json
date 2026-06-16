@@ -1,0 +1,32 @@
+{
+  "mapper.selectByPromptKey" : {
+    "id" : 1,
+    "promptKey" : "pcctest",
+    "promptDesc" : "用于给人讲笑话",
+    "latestVersion" : "1.0.0",
+    "tags" : "[]",
+    "createTime" : [ 2026, 6, 11, 10, 14, 23 ],
+    "updateTime" : [ 2026, 6, 14, 22, 35, 9 ]
+  },
+  "mapper.selectByPromptKeyAndVersion" : {
+    "id" : 1,
+    "version" : "1.0.0",
+    "promptKey" : "pcctest",
+    "versionDesc" : "",
+    "template" : "{name}，用户输入一个人名，prompt基于这个名称讲个笑话",
+    "variables" : "{}",
+    "modelConfig" : "{\"modelId\":10023}",
+    "createTime" : [ 2026, 6, 14, 22, 35, 8 ],
+    "status" : "release"
+  },
+  "service.getByPromptKeyAndVersion" : {
+    "version" : "1.0.0",
+    "promptKey" : "pcctest",
+    "versionDescription" : "",
+    "template" : "{name}，用户输入一个人名，prompt基于这个名称讲个笑话",
+    "variables" : "{}",
+    "modelConfig" : "{\"modelId\":10023}",
+    "createTime" : 1781447708000,
+    "status" : "release"
+  }
+}
