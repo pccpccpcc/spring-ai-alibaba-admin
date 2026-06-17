@@ -117,7 +117,7 @@ DiffHunk {
 | 7 | diff 方向对 UI 是否可逆 | **已定：不做** | 后端只实现单向 A→B（add/remove 以 A→B 为方向），不提供方向反转/交换能力；若需 B→A 视图，调用方自行交换 `versionA`/`versionB` 重新请求即可 |
 | 8 | `template` 为超长 `LONGTEXT` 的性能与响应体大小 | **已定：不截断** | 当前阶段 prompt 不会特别长，不对 `hunks` 做行数/字符数截断，也不加 diff 分页参数；后续若出现超大模板再评估 |
 | 9 | `status` 不同（`pre` vs `release`）的版本能否对比 | 基于现有代码 | 不限制。`getByPromptKeyAndVersion` 不校验 status，两态版本都可取，故都可对比 |
-| 10 | 版本号大小写敏感 | 基于现有代码 | 版本号是字符串精确匹配（`selectByPromptKeyAndVersion` 等值查询），大小写敏感，`v3` ≠ `V3` |
+| 10 | 版本号大小写（实际不敏感） | **修正**（集成测试 t10 发现） | `prompt_version` 表 collation 为 `utf8mb4_0900_ai_ci`（大小写不敏感），`WHERE version='V1'` 会匹配 `v1`。原判断"大小写敏感"是误差，实际 `v3` = `V3`。若需大小写敏感，需改列 collation 为 `_bin` 或 `BINARY` 比较（本期不做） |
 | 11 | 空白符差异（`\r\n` vs `\n`） | **已定：需要做** | 文本 diff 前对换行归一化（统一为 `\n`），避免 `\r\n` 与 `\n` 混用造成整段"伪变更"。作用于 `template` 全程，以及 `variables`/`modelConfig` 在退化文本分支（分支 1）时；JSON 规范化分支（分支 2）因 `pretty-print` 统一输出 `\n` 而天然免疫，无需额外处理 |
 | 12 | JSON 等价但键顺序不同（`variables`/`modelConfig`） | **已定（见下规则）** | 规范化（按键排序 `pretty-print`）后行级 diff，键顺序无关，数值按值比较。详见边界表后「JSON 字段 diff 规则」 |
 

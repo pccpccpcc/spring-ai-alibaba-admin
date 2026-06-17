@@ -39,6 +39,7 @@
 | --- | --- | --- | --- | --- |
 | POST | `/api/prompt/version` | 创建 Prompt 版本。 | Body: `PromptVersionCreateRequest` | `Result<PromptVersion>` |
 | GET | `/api/prompt/version` | 查询指定 Prompt 版本详情。 | Query: `promptKey`, `version` | `Result<PromptVersionDetail>` |
+| GET | `/api/prompt/version/diff` | 对比 Prompt 两个版本差异（template 行级 + variables/modelConfig JSON 规范化 diff）。 | Query: `promptKey`, `versionA`, `versionB` | `Result<PromptVersionDiffResponse>` |
 | GET | `/api/prompt/versions` | 分页查询 Prompt 版本。 | Query: `PromptVersionListRequest` | `Result<PageResult<PromptVersion>>` |
 | GET | `/api/prompt/template` | 查询 Prompt 模板详情。 | Query: `promptTemplateKey` | `Result<PromptTemplateDetail>` |
 | GET | `/api/prompt/templates` | 分页查询 Prompt 模板。 | Query: `PromptTemplateListRequest` | `Result<PageResult<PromptTemplate>>` |

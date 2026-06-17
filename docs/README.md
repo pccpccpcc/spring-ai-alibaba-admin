@@ -53,6 +53,15 @@ Spring AI Alibaba Admin 是基于 Spring AI Alibaba 的 AI Agent 开发、调试
 | [test-status.md](test-status.md) | 测试现状报告（覆盖率、缺口统计） | 了解测试健康度 |
 | [test-gaps.md](test-gaps.md) | 核心链路测试缺口明细 | 决定补测优先级 |
 
+### 📋 需求与改造方案
+
+`requirements/` 下是单个功能/需求从「需求 → 影响分析 → 改造方案」的完整推演文档（含流程图），供评审与实施参考，**不是接口/数据事实来源**（事实以代码 + api-list/data-model 为准）：
+
+| 文档 | 一句话 |
+|---|---|
+| [requirements/prompt-version-diff-solution.md](requirements/prompt-version-diff-solution.md) | Prompt 版本对比：改造方案（评审入口，含决策集中审核） |
+| [requirements/prompt-version-diff.md](requirements/prompt-version-diff.md) | Prompt 版本对比：需求（接口契约 + 边界场景） |
+
 ### 💬 概念问答
 
 | 文档 | 一句话 |
@@ -123,6 +132,6 @@ Spring AI Alibaba Admin 是基于 Spring AI Alibaba 的 AI Agent 开发、调试
 
 ## 4. 关于文档组织
 
-- `docs/` 顶层目前是**扁平结构**（md + svg 同级），加 `qa/`、`prompt/`、`skills/` 三个子目录。这是有意为之：这些文档之间交叉引用密集（30+ 处），且 [../CLAUDE.md](../CLAUDE.md) / 根 README 直接按路径引用；物理上移到子目录会扯断这些链接。**归类通过本文件的分类表表达**，不需要移动文件。
+- `docs/` 顶层目前是**扁平结构**（md + svg 同级），加 `qa/`、`prompt/`、`skills/`、`requirements/` 四个子目录。这是有意为之：这些文档之间交叉引用密集（30+ 处），且 [../CLAUDE.md](../CLAUDE.md) / 根 README 直接按路径引用；物理上移到子目录会扯断这些链接。**归类通过本文件的分类表表达**，不需要移动文件。
 - 新增文档时：放顶层 `docs/`，并在本文件第 1 节对应分类表里登记一行。
 - 如果某类文档将来增长到很多（>10 个），再考虑拆子目录，并一次性更新所有引用。

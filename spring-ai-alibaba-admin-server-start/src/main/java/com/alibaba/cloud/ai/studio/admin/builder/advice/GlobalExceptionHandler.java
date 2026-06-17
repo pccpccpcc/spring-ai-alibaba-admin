@@ -40,6 +40,7 @@ import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
@@ -131,6 +132,11 @@ public class GlobalExceptionHandler {
 		else if (ex instanceof ConstraintViolationException ce) {
 			String message = buildValidationErrorMessage(ce);
 			error = ErrorCode.INVALID_PARAMS.toError("", message);
+		}
+		else if (ex instanceof HandlerMethodValidationException hme) {
+			// Spring 6.1+ 方法级 @Validated 校验失败（如 @RequestParam @Pattern）抛此异常，
+			// 映射为 400 INVALID_PARAMS（参数格式非法应返回 400，而非落兜底 500）。
+			error = ErrorCode.INVALID_PARAMS.toError("", hme.getMessage());
 		}
 		else if (ex instanceof BindException be) {
 			// Handle form binding validation errors

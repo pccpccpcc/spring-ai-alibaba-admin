@@ -96,6 +96,22 @@ root 密码取自 `scripts/install-deps.local.env`（已 gitignore）中的 `MYS
 | `TEST_REDIS_PORT` | `6379` | Redis 端口 |
 | `TEST_ROCKETMQ_ENDPOINTS` | `localhost:18080` | RocketMQ Proxy endpoint |
 
+### 4.3 特例：连 `admin` 业务库的测试（`@EnabledIfEnvironmentVariable`）
+
+Prompt 版本对比的两个测试**不连 `admin_test`，而是连 `admin` 业务库**，并用 `@EnabledIfEnvironmentVariable(named="TEST_MYSQL_DATABASE", matches="admin")` 控制：仅在 `TEST_MYSQL_DATABASE=admin` 时执行，默认（`admin_test`）和 CI 会**自动跳过**（这就是 CI 里看到这两个测试 Skipped 的原因）。
+
+连 `admin` 时通过 `@DynamicPropertySource` 设 `spring.sql.init.mode=never`，禁用 `schema-test.sql`，避免在业务库建/删测试表。
+
+- `PromptVersionBaselineTest`：基线回归，固定改造链路上不变动老方法（`selectByPromptKey` / `selectByPromptKeyAndVersion` / `getByPromptKeyAndVersion`）对真实数据 `pcctest/1.0.0` 的返回，改造前后对比。
+- `PromptVersionDiffIntegrationTest`：边界覆盖，用独立 `difftest` prompt 构造数据覆盖 12 个边界场景，`@BeforeEach` 插 / `@AfterEach` 清，不碰 `pcctest`。
+
+本地运行（需中间件就绪 + `admin` 库有 `pcctest`）：
+
+```bash
+TEST_MYSQL_DATABASE=admin mvn test -pl spring-ai-alibaba-admin-server-start -am \
+    -Dtest=PromptVersionBaselineTest,PromptVersionDiffIntegrationTest
+```
+
 ---
 
 ## 5. 按模块运行
