@@ -183,6 +183,35 @@ docker compose -f docker-compose.ci.yml down -v
 - **中间件没起好**：RocketMQ broker 启动需要 ~60-90s，`init-topic` 会自旋等待；若超时多半是 runner 资源紧张，重跑一次通常就好。
 - **Java 版本**：CI 用 `actions/setup-java` 装 JDK 21，不存在本地那种默认 Java 8 的问题。
 
+### 7.6 首次推送 CI 的坑（fork 工作流）
+
+上游 `spring-ai-alibaba/spring-ai-alibaba-admin` 已于 2026-01-11 **归档为只读**，无法直接 push、也无法接收 PR。本仓库的 CI 实际在**个人 fork** 上跑，下面是首次跑 CI 时踩过的坑：
+
+1. **不能 push 到 origin**：`origin` 指向归档的上游，`git push` 会报 `This repository was archived ... read-only`。需要先在 GitHub 上 Fork 到自己账号，再添加 fork 为 remote：
+   ```bash
+   git remote add fork git@github.com:<你的账号>/spring-ai-alibaba-admin.git
+   git push -u fork feature_cc_test
+   ```
+
+2. **fork 默认禁用 Actions**：新建的 fork 不会自动跑 workflow。进 fork 的 **Settings → Actions → General** → 选 "Allow all actions and reusable workflows" → Save。
+
+3. **推 feature 分支不会自动触发 CI**：workflow 触发条件是 `push 到 main` 或 `PR 到 main`。单独推 `feature_cc_test` 分支**不会跑**。触发方式：
+   - 在 fork 内开 PR（base `main` ← head `feature_cc_test`），`on: pull_request` 自动跑；
+   - 或把分支合进 fork 的 `main` 再 push，`on: push` 自动跑；
+   - `workflow_dispatch` 手动触发需 workflow 文件已在 `main` 上才出现按钮。
+
+4. **开 PR 时 base repository 默认指向上游归档仓**：GitHub 的 PR 页面 base 默认是上游 `spring-ai-alibaba/...`，于是报 "This repository was archived ... read-only"，Create 按钮也点不了。解决：手动把 **base repository** 改成自己 fork `pccpccpcc/spring-ai-alibaba-admin`；或直接用锁定在 fork 内的对比链接：
+   ```
+   https://github.com/<你的账号>/spring-ai-alibaba-admin/compare/main...feature_cc_test
+   ```
+   （注意：是你的 fork 本身可写——Settings 底部 Danger Zone 显示 "Archive" 按钮就代表当前未归档；如果显示 "Unarchive" 才需要先取消归档。）
+
+5. **git 身份未配置会无法 commit**：本仓库 `git config` 未设 user.name/email 时 `git commit` 报 `unable to auto-detect email address`。在仓库内设置（用 GitHub noreply 邮箱可不暴露真实邮箱并自动关联账号头像）：
+   ```bash
+   git config user.name "<名字>"
+   git config user.email "<账号>@users.noreply.github.com"
+   ```
+
 ---
 
 ## 8. 常见踩坑
