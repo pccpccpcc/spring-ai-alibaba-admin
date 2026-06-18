@@ -59,6 +59,14 @@ export async function getPromptVersion(params: PromptAPI.GetPromptVersionParams)
   });
 }
 
+// prompt 版本对比
+export async function getPromptVersionDiff(params: PromptAPI.GetPromptVersionDiffParams) {
+  return request<PromptAPI.GetPromptVersionDiffResult>(`${API_PATH}/prompt/version/diff`, {
+    method: 'GET',
+    params,
+  });
+}
+
 // prompt 版本发布
 export async function publishPromptVersion(params: PromptAPI.PublishPromptVersionParams) {
   return request<PromptAPI.PublishPromptVersionResult>(`${API_PATH}/prompt/version`, {

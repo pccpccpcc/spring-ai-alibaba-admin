@@ -124,6 +124,40 @@ declare namespace PromptAPI {
     previousVersion: string;
   }
 
+  // prompt 版本对比 GET /api/prompt/version/diff
+  interface GetPromptVersionDiffParams {
+    promptKey: string;
+    versionA: string;
+    versionB: string;
+  }
+  interface DiffHunk {
+    type: "add" | "remove" | "equal" | "context";
+    oldStart?: number;
+    newStart?: number;
+    lines: string[];
+  }
+  interface FieldDiff {
+    field: "template" | "variables" | "modelConfig";
+    changed: boolean;
+    diffType: "text" | "json" | "none";
+    hunks: DiffHunk[];
+  }
+  interface VersionMeta {
+    versionDescription?: string;
+    createTime?: number;
+    status?: string;
+    previousVersion?: string;
+  }
+  interface GetPromptVersionDiffResult {
+    promptKey: string;
+    versionA: string;
+    versionB: string;
+    anyChange: boolean;
+    metaA: VersionMeta;
+    metaB: VersionMeta;
+    fields: FieldDiff[];
+  }
+
   interface RunPromptParams {
     sessionId: string;
     promptKey: string;
