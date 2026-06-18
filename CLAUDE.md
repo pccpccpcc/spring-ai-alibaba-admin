@@ -67,6 +67,7 @@ Spring AI Alibaba Admin 是一个基于 Spring AI Alibaba 的 AI Agent 开发、
   java -version   # 确认是 17 或 21，再继续
   ```
   这条对 `mvn test`、`mvn install`、`./start.sh`、`scripts/admin-start.sh` 都适用；不确定时先 `java -version` 自检，不要假设默认环境是对的。
+- **启动 / 停止 Admin 与中间件必须用仓库脚本**（`./start.sh`、`scripts/admin-start.sh`、`scripts/deps-start.sh`、`scripts/deps-stop.sh`、`scripts/deps-status.sh`），**不要绕过脚本手动 `nohup` / `java -jar` / `kill`**。脚本是启动正确的唯一入口——它注入 `SERVER_PORT=8081` 等关键环境变量；手动 `java -jar` 会漏（默认 8080，与已占端口冲突）、也不进 `.local/run/` 的 pid/log 管理，导致后续 `./start.sh --restart` 失效。脚本能力不够就**改脚本**，不要绕过。
 - 后端框架：Spring Boot 3.3.x、Spring AI、Spring AI Alibaba。
 - 数据访问同时存在 MyBatis-Plus、MyBatis XML Mapper、JPA，改动时先看所在模块既有风格。
 - 数据关系要区分 SQL 显式 FK 和业务逻辑 FK。很多核心关系通过 `workspace_id`、`app_id`、`plugin_id`、`kb_id` 等业务 ID 关联，但 SQL 没有外键约束。
