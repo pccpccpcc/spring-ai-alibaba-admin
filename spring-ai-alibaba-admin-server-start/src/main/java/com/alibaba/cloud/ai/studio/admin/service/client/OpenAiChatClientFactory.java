@@ -44,7 +44,19 @@ public class OpenAiChatClientFactory implements ChatClientFactory {
     
     @Override
     public ChatModel buildChatModel(ModelConfigDO modelConfig) {
-        OpenAiApi api = OpenAiApi.builder().apiKey(modelConfig.getApiKey()).baseUrl(modelConfig.getBaseUrl()).build();
+        OpenAiApi.Builder apiBuilder = OpenAiApi.builder()
+                .apiKey(modelConfig.getApiKey())
+                .baseUrl(modelConfig.getBaseUrl());
+
+        // 智谱 GLM (open.bigmodel.cn) 的 OpenAI 兼容路径不带 /v1：
+        // chat = {base}/chat/completions，embedding = {base}/embeddings，
+        // base 形如 https://open.bigmodel.cn/api/paas/v4。
+        // 这里显式指定路径，避免 Spring AI 默认拼 /v1/chat/completions 导致 404。
+        if (isZhipuEndpoint(modelConfig.getBaseUrl())) {
+            apiBuilder.completionsPath("/chat/completions").embeddingsPath("/embeddings");
+        }
+
+        OpenAiApi api = apiBuilder.build();
         // 创建ChatModel
         OpenAiChatModel model =  OpenAiChatModel.builder().openAiApi(api)
                 .toolCallingManager(toolCallingManager)
@@ -52,6 +64,13 @@ public class OpenAiChatClientFactory implements ChatClientFactory {
                 .build();
         model.setObservationConvention(customChatModelObservationConvention);
         return model;
+    }
+
+    /**
+     * 判断 endpoint 是否指向智谱 GLM。智谱的 OpenAI 兼容路径不带 /v1，需要单独适配。
+     */
+    private static boolean isZhipuEndpoint(String endpoint) {
+        return endpoint != null && endpoint.toLowerCase().contains("bigmodel");
     }
     
     @Override

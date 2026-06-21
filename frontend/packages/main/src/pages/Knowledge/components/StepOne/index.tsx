@@ -141,16 +141,16 @@ export default function StepOne({
               </Tooltip>
             </div>
           }
-          required
         >
           <ModelSelector
             value={formValue.rerank_value}
             modelType="rerank"
+            allowClear
             onChange={(val: string) => {
               changeFormValue({
                 rerank_value: val,
-                rerank_model: val?.split('@@@')[1],
-                rerank_provider: val?.split('@@@')[0],
+                rerank_model: val?.split('@@@')[1] || '',
+                rerank_provider: val?.split('@@@')[0] || '',
               });
             }}
           />

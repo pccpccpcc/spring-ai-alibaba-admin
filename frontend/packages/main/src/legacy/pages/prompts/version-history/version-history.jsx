@@ -881,9 +881,9 @@ const VersionHistoryPage = () => {
       {/* 版本对比模态框 */}
       {showCompare && selectedVersions.length === 2 && (
         <VersionCompareModal
-          prompt={currentPrompt}
-          version1={selectedVersions[0]}
-          version2={selectedVersions[1]}
+          promptKey={currentPrompt?.promptKey}
+          versionA={selectedVersions[0]?.version}
+          versionB={selectedVersions[1]?.version}
           onClose={() => {
             setShowCompare(false);
             setSelectedVersions([]);

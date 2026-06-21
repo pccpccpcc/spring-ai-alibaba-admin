@@ -1,7 +1,5 @@
-#!/bin/bash
-cd docker/middleware/
-docker compose up -d --build
-sleep 5
-cd ../../spring-ai-alibaba-admin-server-start
-mvn clean install -DskipTests
+#!/usr/bin/env bash
+set -euo pipefail
 
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec "$ROOT_DIR/scripts/admin-start.sh" "$@"

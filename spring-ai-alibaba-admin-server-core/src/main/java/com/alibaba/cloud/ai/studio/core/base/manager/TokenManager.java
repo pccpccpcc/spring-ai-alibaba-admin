@@ -26,6 +26,7 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * JWT token manager for handling authentication tokens. Manages the generation, storage,
@@ -82,6 +83,7 @@ public class TokenManager {
 	private String createToken(Map<String, Object> claims, String subject, long expiration) {
 		return Jwts.builder()
 			.claims(claims)
+			.id(UUID.randomUUID().toString())
 			.subject(subject)
 			.issuedAt(new Date(System.currentTimeMillis()))
 			.expiration(new Date(System.currentTimeMillis() + expiration * 1000L))

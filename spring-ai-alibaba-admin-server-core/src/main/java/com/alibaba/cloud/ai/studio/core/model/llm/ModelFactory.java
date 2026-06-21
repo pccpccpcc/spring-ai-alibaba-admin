@@ -168,15 +168,38 @@ public class ModelFactory {
 		if (StringUtils.isNotBlank(credential.getEndpoint())) {
 			String endpoint = credential.getEndpoint();
 
-			// to remove the /v1 part as spring ai client will add it
-			if (endpoint.endsWith("/v1") || endpoint.endsWith("/v1/")) {
-				endpoint = endpoint.replaceAll("/v1/?$", "");
+			if (isZhipuEndpoint(endpoint)) {
+				// 智谱 GLM (open.bigmodel.cn) 的 OpenAI 兼容路径不带 /v1：
+				// chat = {base}/chat/completions，embedding = {base}/embeddings，
+				// base 形如 https://open.bigmodel.cn/api/paas/v4。
+				// 这里显式指定路径，避免 Spring AI 默认拼 /v1/chat/completions 导致 404。
+				openAiApiBuilder.baseUrl(stripTrailingSlash(endpoint))
+					.completionsPath("/chat/completions")
+					.embeddingsPath("/embeddings");
 			}
-
-			openAiApiBuilder.baseUrl(endpoint);
+			else {
+				// 其他 OpenAI 兼容 provider 走默认 /v1/chat/completions；
+				// 去掉用户可能多填的 /v1（Spring AI 会再加）。
+				if (endpoint.endsWith("/v1") || endpoint.endsWith("/v1/")) {
+					endpoint = endpoint.replaceAll("/v1/?$", "");
+				}
+				openAiApiBuilder.baseUrl(endpoint);
+			}
 		}
 
 		return openAiApiBuilder.build();
+	}
+
+	/**
+	 * 判断 endpoint 是否指向智谱 GLM。智谱的 OpenAI 兼容路径不带 /v1，需要单独适配。
+	 */
+	private static boolean isZhipuEndpoint(String endpoint) {
+		String lower = endpoint.toLowerCase();
+		return lower.contains("open.bigmodel.cn") || lower.contains("bigmodel");
+	}
+
+	private static String stripTrailingSlash(String endpoint) {
+		return endpoint.endsWith("/") ? endpoint.substring(0, endpoint.length() - 1) : endpoint;
 	}
 
 }

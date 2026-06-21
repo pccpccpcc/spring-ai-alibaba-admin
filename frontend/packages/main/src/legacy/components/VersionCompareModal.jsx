@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   Card,
@@ -6,84 +6,148 @@ import {
   Row,
   Col,
   Space,
-  Tag,
-  Divider,
   Empty,
-  Button
+  Button,
+  Spin,
+  Alert,
 } from 'antd';
 import {
   ArrowLeftOutlined,
   ArrowRightOutlined,
   CloseOutlined,
-  SettingOutlined,
-  FileTextOutlined,
   PlusOutlined,
   MinusOutlined,
-  EditOutlined
 } from '@ant-design/icons';
+import { getPromptVersionDiff } from '../services/prompt';
 
 const { Title, Text } = Typography;
 
-const VersionCompareModal = ({ prompt, version1, version2, onClose }) => {
-  // 确保version1是较早的版本，version2是较新的版本
-  // 使用 createTime 或 version 来判断新旧，createTime 更准确
-  const [olderVersion, newerVersion] = (() => {
-    const time1 = version1.createTime || 0;
-    const time2 = version2.createTime || 0;
-    return time1 < time2 ? [version1, version2] : [version2, version1];
-  })();
+// 行级配色（复用原组件配色语言）
+const LINE_STYLE = {
+  add: { bg: '#f6ffed', border: '#73d13d', color: '#52c41a' },
+  remove: { bg: '#fff2f0', border: '#ff7875', color: '#ff4d4f' },
+  equal: { bg: '#ffffff', border: '#f0f0f0', color: '#262626' },
+  context: { bg: '#fafafa', border: '#f0f0f0', color: '#8c8c8c' },
+};
 
-  const renderDiffLines = (oldText, newText) => {
-    // 安全地处理可能为空的文本内容
-    const safeOldText = oldText || '';
-    const safeNewText = newText || '';
-    const oldLines = safeOldText.split('\n');
-    const newLines = safeNewText.split('\n');
-    const maxLines = Math.max(oldLines.length, newLines.length);
-    
-    const result = [];
-    for (let i = 0; i < maxLines; i++) {
-      const oldLine = oldLines[i] || '';
-      const newLine = newLines[i] || '';
-      
-      if (oldLine === newLine) {
-        result.push({
-          type: 'unchanged',
-          oldLine,
-          newLine,
-          lineNumber: i + 1
-        });
-      } else {
-        if (oldLine && !newLine) {
-          result.push({
-            type: 'removed',
-            oldLine,
-            newLine: '',
-            lineNumber: i + 1
-          });
-        } else if (!oldLine && newLine) {
-          result.push({
-            type: 'added',
-            oldLine: '',
-            newLine,
-            lineNumber: i + 1
-          });
-        } else {
-          result.push({
-            type: 'modified',
-            oldLine,
-            newLine,
-            lineNumber: i + 1
-          });
-        }
-      }
+const FIELD_LABEL = {
+  template: 'Prompt 模板',
+  variables: '变量',
+  modelConfig: '模型配置',
+};
+
+const VersionCompareModal = ({ promptKey, versionA, versionB, onClose }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [diff, setDiff] = useState(null);
+
+  useEffect(() => {
+    if (!promptKey || !versionA || !versionB) {
+      return;
     }
-    return result;
+    setLoading(true);
+    setError(null);
+    setDiff(null);
+    getPromptVersionDiff({ promptKey, versionA, versionB })
+      .then((res) => {
+        if (res?.data) {
+          setDiff(res.data);
+        } else {
+          setError(res?.message || '对比结果为空');
+        }
+      })
+      .catch((e) => setError(e?.message || '对比失败，请稍后重试'))
+      .finally(() => setLoading(false));
+  }, [promptKey, versionA, versionB]);
+
+  const renderHunks = (hunks) => {
+    if (!hunks || hunks.length === 0) {
+      return (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description="无差异"
+          style={{ padding: '16px 0' }}
+        />
+      );
+    }
+    return (
+      <div style={{ fontFamily: 'monospace', fontSize: '13px', border: '1px solid #f0f0f0', borderRadius: 6 }}>
+        {hunks.map((hunk, idx) => {
+          const s = LINE_STYLE[hunk.type] || LINE_STYLE.equal;
+          return (
+            <div
+              key={idx}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '56px 24px 1fr',
+                backgroundColor: s.bg,
+                borderLeft: `4px solid ${s.border}`,
+                borderBottom: idx < hunks.length - 1 ? '1px solid #f0f0f0' : 'none',
+              }}
+            >
+              <div
+                style={{
+                  padding: '4px 8px',
+                  textAlign: 'center',
+                  backgroundColor: '#fafafa',
+                  borderRight: '1px solid #f0f0f0',
+                  color: '#8c8c8c',
+                  fontSize: '12px',
+                }}
+              >
+                {hunk.type === 'add' ? hunk.newStart : hunk.oldStart}
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: s.color,
+                }}
+              >
+                {hunk.type === 'add' ? (
+                  <PlusOutlined style={{ fontSize: '12px' }} />
+                ) : hunk.type === 'remove' ? (
+                  <MinusOutlined style={{ fontSize: '12px' }} />
+                ) : null}
+              </div>
+              <div style={{ padding: '4px 12px', whiteSpace: 'pre-wrap', color: s.color }}>
+                {(hunk.lines || []).join('\n')}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
   };
 
-  const diffLines = renderDiffLines(
-    olderVersion.content || olderVersion.template || '',
-    newerVersion.content || newerVersion.template || ''
+  const renderMeta = (meta, label, version, arrowIcon) => (
+    <Card size="small">
+      <Title level={5} style={{ margin: 0, marginBottom: 12, display: 'flex', alignItems: 'center' }}>
+        {arrowIcon}
+        {label}: {version}
+      </Title>
+      <Space direction="vertical" size={8} style={{ width: '100%' }}>
+        <div>
+          <Text strong>创建时间：</Text>
+          <Text style={{ marginLeft: 8 }}>
+            {meta?.createTime ? new Date(meta.createTime).toLocaleString('zh-CN') : '未知'}
+          </Text>
+        </div>
+        <div>
+          <Text strong>说明：</Text>
+          <Text style={{ marginLeft: 8 }}>{meta?.versionDescription || '无说明'}</Text>
+        </div>
+        <div>
+          <Text strong>状态：</Text>
+          <Text style={{ marginLeft: 8 }}>{meta?.status || '-'}</Text>
+        </div>
+        <div>
+          <Text strong>前置版本：</Text>
+          <Text style={{ marginLeft: 8 }}>{meta?.previousVersion || '-'}</Text>
+        </div>
+      </Space>
+    </Card>
   );
 
   return (
@@ -91,348 +155,81 @@ const VersionCompareModal = ({ prompt, version1, version2, onClose }) => {
       title={
         <div>
           <Title level={4} style={{ margin: 0 }}>
-            版本对比 - {prompt.promptKey || prompt.name || '未知Prompt'}
+            版本对比 - {promptKey || '未知 Prompt'}（{versionA} → {versionB}）
           </Title>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginTop: 16, fontSize: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginTop: 12, fontSize: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{
-                width: 16,
-                height: 16,
-                backgroundColor: '#fff2f0',
-                borderLeft: '4px solid #ff7875',
-                borderRadius: 2
-              }}></div>
+              <div style={{ width: 16, height: 16, backgroundColor: '#fff2f0', borderLeft: '4px solid #ff7875', borderRadius: 2 }} />
               <Text type="secondary">删除的内容</Text>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{
-                width: 16,
-                height: 16,
-                backgroundColor: '#f6ffed',
-                borderLeft: '4px solid #73d13d',
-                borderRadius: 2
-              }}></div>
+              <div style={{ width: 16, height: 16, backgroundColor: '#f6ffed', borderLeft: '4px solid #73d13d', borderRadius: 2 }} />
               <Text type="secondary">新增的内容</Text>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{
-                width: 16,
-                height: 16,
-                backgroundColor: '#fffbe6',
-                borderLeft: '4px solid #fadb14',
-                borderRadius: 2
-              }}></div>
-              <Text type="secondary">修改的内容</Text>
             </div>
           </div>
         </div>
       }
       open={true}
       onCancel={onClose}
-      width={1400}
-      style={{
-        top: 20,
-        maxHeight: 'calc(100vh - 40px)'
-      }}
-      bodyStyle={{
-        maxHeight: 'calc(100vh - 200px)',
-        overflowY: 'auto',
-        padding: 24
-      }}
+      width={1200}
+      style={{ top: 20, maxHeight: 'calc(100vh - 40px)' }}
+      bodyStyle={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', padding: 24 }}
       footer={[
         <Button key="close" type="primary" onClick={onClose}>
           关闭对比
-        </Button>
+        </Button>,
       ]}
       closeIcon={<CloseOutlined />}
     >
-      <Space direction="vertical" size={24} style={{ width: '100%' }}>
-        {/* 版本信息对比 */}
-        <Row gutter={24}>
-          <Col span={12}>
-            <Card size="small">
-              <Title level={5} style={{ margin: 0, marginBottom: 12, display: 'flex', alignItems: 'center' }}>
-                <ArrowLeftOutlined style={{ color: '#1890ff', marginRight: 8 }} />
-                旧版本: {olderVersion.version}
-              </Title>
-              <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                <div>
-                  <Text strong>创建时间：</Text>
-                  <Text style={{ marginLeft: 8 }}>
-                    {olderVersion.createTime ? new Date(olderVersion.createTime).toLocaleString('zh-CN') : '未知'}
-                  </Text>
-                </div>
-                <div>
-                  <Text strong>说明：</Text>
-                  <Text style={{ marginLeft: 8 }}>
-                    {olderVersion.description || olderVersion.versionDescription || '无说明'}
-                  </Text>
-                </div>
-                {olderVersion.modelConfig && (
-                  <div>
-                    <Text strong>模型：</Text>
-                    <Text style={{ marginLeft: 8 }}>{olderVersion.modelConfig.modelId}</Text>
-                  </div>
-                )}
-              </Space>
-            </Card>
-          </Col>
-          
-          <Col span={12}>
-            <Card size="small">
-              <Title level={5} style={{ margin: 0, marginBottom: 12, display: 'flex', alignItems: 'center' }}>
-                <ArrowRightOutlined style={{ color: '#52c41a', marginRight: 8 }} />
-                新版本: {newerVersion.version}
-              </Title>
-              <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                <div>
-                  <Text strong>创建时间：</Text>
-                  <Text style={{ marginLeft: 8 }}>
-                    {newerVersion.createTime ? new Date(newerVersion.createTime).toLocaleString('zh-CN') : '未知'}
-                  </Text>
-                </div>
-                <div>
-                  <Text strong>说明：</Text>
-                  <Text style={{ marginLeft: 8 }}>
-                    {newerVersion.description || newerVersion.versionDescription || '无说明'}
-                  </Text>
-                </div>
-                {newerVersion.modelConfig && (
-                  <div>
-                    <Text strong>模型：</Text>
-                    <Text style={{ marginLeft: 8 }}>{newerVersion.modelConfig.modelId}</Text>
-                  </div>
-                )}
-              </Space>
-            </Card>
-          </Col>
-        </Row>
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '80px 0' }}>
+          <Spin tip="加载对比中..." size="large" />
+        </div>
+      ) : error ? (
+        <Alert type="error" message="对比失败" description={error} showIcon style={{ margin: '24px 0' }} />
+      ) : !diff ? null : (
+        <Space direction="vertical" size={24} style={{ width: '100%' }}>
+          {/* 版本元信息 */}
+          <Row gutter={24}>
+            <Col span={12}>
+              {renderMeta(
+                diff.metaA,
+                '旧版本',
+                versionA,
+                <ArrowLeftOutlined style={{ color: '#1890ff', marginRight: 8 }} />,
+              )}
+            </Col>
+            <Col span={12}>
+              {renderMeta(
+                diff.metaB,
+                '新版本',
+                versionB,
+                <ArrowRightOutlined style={{ color: '#52c41a', marginRight: 8 }} />,
+              )}
+            </Col>
+          </Row>
 
-        {/* 模型配置对比 */}
-        <Card
-          title={
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <SettingOutlined style={{ marginRight: 8 }} />
-              模型配置对比
-            </div>
-          }
-          size="small"
-        >
-          {(olderVersion.modelConfig || newerVersion.modelConfig) ? (
-            <Row gutter={24}>
-              <Col span={12}>
-                <Title level={5} style={{ marginBottom: 12 }}>旧版本配置</Title>
-                {olderVersion.modelConfig ? (
-                  <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Text type="secondary">模型：</Text>
-                      <Text>{olderVersion.modelConfig.modelId}</Text>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Text type="secondary">最大令牌：</Text>
-                      <Text>{olderVersion.modelConfig.maxTokens}</Text>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Text type="secondary">Temperature：</Text>
-                      <Text>{olderVersion.modelConfig.temperature}</Text>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Text type="secondary">Top P：</Text>
-                      <Text>{olderVersion.modelConfig.topP}</Text>
-                    </div>
-                  </Space>
-                ) : (
-                  <Text type="secondary">无模型配置</Text>
-                )}
-              </Col>
-              <Col span={12}>
-                <Title level={5} style={{ marginBottom: 12 }}>新版本配置</Title>
-                {newerVersion.modelConfig ? (
-                  <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Text type="secondary">模型：</Text>
-                      <Text
-                        strong={olderVersion.modelConfig?.modelId !== newerVersion.modelConfig.modelId}
-                        style={{
-                          color: olderVersion.modelConfig?.modelId !== newerVersion.modelConfig.modelId ? '#52c41a' : undefined
-                        }}
-                      >
-                        {newerVersion.modelConfig.modelId}
-                      </Text>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Text type="secondary">最大令牌：</Text>
-                      <Text
-                        strong={olderVersion.modelConfig?.maxTokens !== newerVersion.modelConfig.maxTokens}
-                        style={{
-                          color: olderVersion.modelConfig?.maxTokens !== newerVersion.modelConfig.maxTokens ? '#52c41a' : undefined
-                        }}
-                      >
-                        {newerVersion.modelConfig.maxTokens}
-                      </Text>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Text type="secondary">Temperature：</Text>
-                      <Text
-                        strong={olderVersion.modelConfig?.temperature !== newerVersion.modelConfig.temperature}
-                        style={{
-                          color: olderVersion.modelConfig?.temperature !== newerVersion.modelConfig.temperature ? '#52c41a' : undefined
-                        }}
-                      >
-                        {newerVersion.modelConfig.temperature}
-                      </Text>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Text type="secondary">Top P：</Text>
-                      <Text
-                        strong={olderVersion.modelConfig?.topP !== newerVersion.modelConfig.topP}
-                        style={{
-                          color: olderVersion.modelConfig?.topP !== newerVersion.modelConfig.topP ? '#52c41a' : undefined
-                        }}
-                      >
-                        {newerVersion.modelConfig.topP}
-                      </Text>
-                    </div>
-                  </Space>
-                ) : (
-                  <Text type="secondary">无模型配置</Text>
-                )}
-              </Col>
-            </Row>
+          {/* 内容字段差异：template / variables / modelConfig */}
+          {!diff.anyChange ? (
+            <Empty description="两个版本内容完全相同" style={{ padding: '40px 0' }} />
           ) : (
-            <Empty
-              image={<SettingOutlined style={{ fontSize: 48, color: '#d9d9d9' }} />}
-              description="两个版本都没有模型配置"
-              style={{ padding: '32px 0' }}
-            />
+            diff.fields.map((f) => (
+              <Card
+                key={f.field}
+                size="small"
+                title={
+                  <Space>
+                    <Text strong>{FIELD_LABEL[f.field] || f.field}</Text>
+                    {!f.changed ? <Text type="secondary">（无差异）</Text> : null}
+                  </Space>
+                }
+              >
+                {renderHunks(f.hunks)}
+              </Card>
+            ))
           )}
-        </Card>
-
-        {/* 内容对比 */}
-        <Card
-          title={
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <FileTextOutlined style={{ marginRight: 8 }} />
-              内容对比
-            </div>
-          }
-          size="small"
-        >
-          <div style={{ maxHeight: 384, overflowY: 'auto', border: '1px solid #f0f0f0', borderRadius: 6 }}>
-            {diffLines.length > 0 ? (
-              <div style={{ fontFamily: 'monospace', fontSize: '13px' }}>
-                {diffLines.map((line, index) => {
-                  const getLineStyle = (type) => {
-                    const baseStyle = {
-                      display: 'grid',
-                      gridTemplateColumns: '50px 40px 1fr 1fr',
-                      borderBottom: '1px solid #f0f0f0'
-                    };
-                    switch (type) {
-                      case 'added':
-                        return { ...baseStyle, backgroundColor: '#f6ffed', borderLeft: '4px solid #73d13d' };
-                      case 'removed':
-                        return { ...baseStyle, backgroundColor: '#fff2f0', borderLeft: '4px solid #ff7875' };
-                      case 'modified':
-                        return { ...baseStyle, backgroundColor: '#fffbe6', borderLeft: '4px solid #fadb14' };
-                      default:
-                        return { ...baseStyle, backgroundColor: '#ffffff' };
-                    }
-                  };
-
-                  const getIcon = (type) => {
-                    switch (type) {
-                      case 'added':
-                        return <PlusOutlined style={{ color: '#52c41a', fontSize: '12px' }} />;
-                      case 'removed':
-                        return <MinusOutlined style={{ color: '#ff4d4f', fontSize: '12px' }} />;
-                      case 'modified':
-                        return <EditOutlined style={{ color: '#faad14', fontSize: '12px' }} />;
-                      default:
-                        return null;
-                    }
-                  };
-
-                  return (
-                    <div key={index} style={getLineStyle(line.type)}>
-                      {/* 行号 */}
-                      <div style={{
-                        padding: '4px 8px',
-                        textAlign: 'center',
-                        backgroundColor: '#fafafa',
-                        borderRight: '1px solid #f0f0f0',
-                        color: '#8c8c8c',
-                        fontSize: '12px'
-                      }}>
-                        {line.lineNumber}
-                      </div>
-                      
-                      {/* 变更类型图标 */}
-                      <div style={{
-                        padding: '4px 8px',
-                        textAlign: 'center',
-                        borderRight: '1px solid #f0f0f0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>
-                        {getIcon(line.type)}
-                      </div>
-                      
-                      {/* 旧版本内容 */}
-                      <div style={{
-                        padding: '4px 12px',
-                        borderRight: '1px solid #f0f0f0',
-                        color: '#262626',
-                        whiteSpace: 'pre-wrap'
-                      }}>
-                        {line.type === 'added' ? (
-                          <Text type="secondary" italic>（新增行）</Text>
-                        ) : (
-                          <span
-                            style={{
-                              textDecoration: line.type === 'removed' || line.type === 'modified' ? 'line-through' : 'none',
-                              color: line.type === 'removed' || line.type === 'modified' ? '#ff4d4f' : '#262626'
-                            }}
-                          >
-                            {line.oldLine || '\u00A0'}
-                          </span>
-                        )}
-                      </div>
-                      
-                      {/* 新版本内容 */}
-                      <div style={{
-                        padding: '4px 12px',
-                        color: '#262626',
-                        whiteSpace: 'pre-wrap'
-                      }}>
-                        {line.type === 'removed' ? (
-                          <Text type="secondary" italic>（删除行）</Text>
-                        ) : (
-                          <span
-                            style={{
-                              color: line.type === 'added' || line.type === 'modified' ? '#52c41a' : '#262626',
-                              fontWeight: line.type === 'added' || line.type === 'modified' ? 'bold' : 'normal'
-                            }}
-                          >
-                            {line.newLine || '\u00A0'}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <Empty
-                image={<FileTextOutlined style={{ fontSize: 48, color: '#d9d9d9' }} />}
-                description="两个版本的内容完全相同"
-                style={{ padding: '32px 0' }}
-              />
-            )}
-          </div>
-        </Card>
-      </Space>
+        </Space>
+      )}
     </Modal>
   );
 };

@@ -55,9 +55,11 @@ Spring AI Alibaba Admin Server 是基于 Spring Boot 3.x 构建的 AI Agent 管�
 ### 环境要求
 - **JDK 17+**
 - **Maven 3.8+**
+- **Node.js 20.x+**（构建完整控制台前端需要）
 - **MySQL 8.0+**
 - **Elasticsearch 9.x**
-- **Nacos 2.x**
+- **Nacos 3.x**
+- **Redis、RocketMQ、LoongCollector**
 
 
 #### 1. 克隆项目
@@ -67,12 +69,20 @@ git clone https://github.com/spring-ai-alibaba/spring-ai-alibaba-admin.git
 cd admin
 ```
 
-#### 2. 配置您的 API 密钥
-根据您的模型供应商，修改 `spring-ai-alibaba-admin-server/model-config.yaml` 的模型配置。
-- 如果您使用DashScope，请参照model-config-dashscope.yaml模版进行配置
-- 如果您使用DeepSeek，请参照model-config-deepseek.yaml模版进行配置
-- 如果您使用OpenAI，请参照model-config-openai.yaml模版进行配置
-> 💡 **获取您的 DashScope API 密钥**: 访问 [阿里云百炼控制台](https://bailian.console.aliyun.com/?tab=model#/api-key) 获取免费 API 密钥。
+#### 2. 安装和启动依赖中间件
+
+首次使用：
+
+```bash
+scripts/install-deps.sh
+```
+
+日常启动：
+
+```bash
+scripts/deps-start.sh
+scripts/deps-status.sh
+```
 
 #### 3. nacos配置（可选）
 如果您需要修改nacos地址，请更新spring-ai-alibaba-admin-server/src/main/resources/application.yml文件中的配置
@@ -82,20 +92,35 @@ nacos:
 ```
 
 ### 4. 启动SAA Admin
-在根目录下，执行启动脚本。该脚本会帮助您启动好数据库相关的服务
+在仓库根目录下执行启动脚本。该脚本会启动中间件、构建完整前端、同步静态资源、打包并启动后端服务。
 
 ```bash
-sh start.sh
+./start.sh
 ```
-spring-ai-alibaba-admin-server 目录下启动应用程序
+
+常用命令：
+
 ```bash
-mvn spring-boot:run
+./start.sh --skip-deps --restart
+./start.sh --build --restart
+./start.sh --foreground
 ```
+
 ### 5. 访问应用
 
-打开浏览器访问 http://localhost:8080 即可使用 SAA Admin 平台。
+打开浏览器访问 http://localhost:8081/admin 即可使用 SAA Admin 平台。
 
-至此，您已经可以在平台中对prompt进行管理、调试、评估、可观测。如果您期望Spring AI Alibaba Agent应用能够集成Nacos以实现prompt加载以及动态更新，并且观测线上的运行情况，可以参照第六步配置您的 AI Agent 应用。
+默认账号：`saa` / `123456`。
+
+健康检查：
+
+```bash
+curl http://localhost:8081/actuator/health
+```
+
+至此，您已经可以在平台中对 Prompt 进行管理、调试、评估、可观测。如果您期望 Spring AI Alibaba Agent 应用能够集成 Nacos 以实现 Prompt 加载以及动态更新，并且观测线上的运行情况，请参考根目录 README 的“连接您的 AI Agent 应用”。
+
+如需真实模型调用，登录后进入“模型服务管理”配置 OpenAI 兼容 Provider、API Key、endpoint 和模型类型。知识库至少需要 `text_embedding` 模型；`rerank` 可选。
 
 
 ## 配置说明

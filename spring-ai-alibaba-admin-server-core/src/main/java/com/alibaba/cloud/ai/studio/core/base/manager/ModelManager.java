@@ -130,6 +130,9 @@ public class ModelManager {
 		if (StringUtils.isNotBlank(modelConfigInfo.getIcon())) {
 			existingModel.setIcon(modelConfigInfo.getIcon());
 		}
+		if (StringUtils.isNotBlank(modelConfigInfo.getType())) {
+			existingModel.setType(modelConfigInfo.getType());
+		}
 		if (modelConfigInfo.getEnable() != null) {
 			existingModel.setEnable(modelConfigInfo.getEnable());
 		}

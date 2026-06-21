@@ -91,59 +91,74 @@ fi
 
 log_info "开始创建索引和配置..."
 
+TMP_DIR="$(mktemp -d)"
+trap 'rm -rf "$TMP_DIR"' EXIT
+
 # 创建 pipeline
 log_info "创建 parsing_loongsuite_traces pipeline..."
+cat > "$TMP_DIR/parsing_loongsuite_traces.json" <<'EOF'
+{
+  "description": "parse loongsuite traces",
+  "processors": [
+    {
+      "json": {
+        "field": "contents.attribute",
+        "target_field": "attributes",
+        "ignore_failure": true
+      }
+    },
+    {
+      "json": {
+        "field": "contents.resource",
+        "target_field": "resources",
+        "ignore_failure": true
+      }
+    },
+    {
+      "json": {
+        "field": "contents.links",
+        "target_field": "spanLinks",
+        "ignore_failure": true
+      }
+    },
+    {
+      "json": {
+        "field": "contents.logs",
+        "target_field": "spanEvents",
+        "ignore_failure": true
+      }
+    },
+    {
+      "remove": {
+        "field": [
+          "contents.attribute",
+          "contents.resource",
+          "contents.links",
+          "contents.logs"
+        ],
+        "ignore_missing": true
+      }
+    },
+    {
+      "rename": {
+        "field": "contents",
+        "target_field": "metadata",
+        "ignore_missing": true
+      }
+    },
+    {
+      "script": {
+        "ignore_failure": true,
+        "source": "Map usage = new HashMap(); long total = 0; if (ctx.containsKey('attributes') && ctx.attributes != null) { if (ctx.attributes.containsKey('gen_ai.usage.input_tokens')) { long input = Long.parseLong(ctx.attributes['gen_ai.usage.input_tokens'].toString()); usage['input_tokens'] = input; total += input; } if (ctx.attributes.containsKey('gen_ai.usage.output_tokens')) { long output = Long.parseLong(ctx.attributes['gen_ai.usage.output_tokens'].toString()); usage['output_tokens'] = output; total += output; } } usage['total_tokens'] = total; ctx.usage = usage;"
+      }
+    }
+  ]
+}
+EOF
+
 pipeline_command='curl -X PUT "http://elasticsearch:9200/_ingest/pipeline/parsing_loongsuite_traces" \
   -H "Content-Type: application/json" \
-  -d '"'"'{
-    "processors": [
-      {
-        "json": {
-          "field": "contents.attribute",
-          "target_field": "attributes"
-        }
-      },
-      {
-        "json": {
-          "field": "contents.resource",
-          "target_field": "resources"
-        }
-      },
-      {
-        "json": {
-          "field": "contents.links",
-          "target_field": "spanLinks"
-        }
-      },
-      {
-        "json": {
-          "field": "contents.logs",
-          "target_field": "spanEvents"
-        }
-      },
-      {
-        "remove": {
-          "field": [
-            "contents.attribute",
-            "contents.resource",
-            "contents.links",
-            "contents.logs"
-          ]
-        }
-      },
-      {
-        "rename": {
-          "field": "contents",
-          "target_field": "metadata"
-        }
-      },
-      {
-        "script": {
-          "source": "Map usage = new HashMap();\nlong total = 0;\nif (ctx.attributes.containsKey(\"gen_ai.usage.input_tokens\")) {\n  long input = Long.parseLong(ctx.attributes[\"gen_ai.usage.input_tokens\"]);\n  usage[\"input_tokens\"] = input;\n  total = total + input;\n}\nif (ctx.attributes.containsKey(\"gen_ai.usage.output_tokens\")) {\n  long output = Long.parseLong(ctx.attributes[\"gen_ai.usage.output_tokens\"]);\n  usage[\"output_tokens\"] = output;\n  total = total + output;\n}\nusage[\"total_tokens\"] = total;\nctx.usage = usage;"
-        }
-      }
-    ]
-  }'"'"''
+  --data-binary "@'"$TMP_DIR"'/parsing_loongsuite_traces.json"'
 
 if ! retry_operation "创建 parsing_loongsuite_traces pipeline" "$pipeline_command"; then
     log_error "创建 pipeline 失败，退出初始化"
@@ -159,132 +174,106 @@ if ! retry_operation "验证 pipeline 创建" "$pipeline_verification_command"; 
     exit 1
 fi
 
-# 创建索引
-log_info "创建 loongsuite_traces 索引..."
-index_command='curl -X PUT "http://elasticsearch:9200/loongsuite_traces" \
-  -H "Content-Type: application/json" \
-  -d '"'"'{
-    "settings": {
-      "index.default_pipeline": "parsing_loongsuite_traces"
-    },
-    "mappings": {
-      "dynamic": "false",
+# 创建或修复索引
+log_info "创建或修复 loongsuite_traces 索引..."
+cat > "$TMP_DIR/loongsuite_traces_mapping.json" <<'EOF'
+{
+  "dynamic": "false",
+  "properties": {
+    "metadata": {
+      "type": "object",
       "properties": {
-        "metadata": {
+        "duration": { "type": "long" },
+        "end": { "type": "long" },
+        "host": { "type": "keyword" },
+        "kind": { "type": "text" },
+        "name": { "type": "keyword" },
+        "otlp": {
           "type": "object",
           "properties": {
-            "duration": {
-              "type": "long"
-            },
-            "end": {
-              "type": "long"
-            },
-            "host": {
-              "type": "keyword"
-            },
-            "kind": {
-              "type": "text"
-            },
-            "name": {
-              "type": "keyword"
-            },
-            "otlp": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "keyword"
-                },
-                "version": {
-                  "type": "version"
-                }
-              }
-            },
-            "parentSpanID": {
-              "type": "text"
-            },
-            "service": {
-              "type": "keyword"
-            },
-            "spanID": {
-              "type": "text"
-            },
-            "start": {
-              "type": "long"
-            },
-            "statusCode": {
-              "type": "text"
-            },
-            "statusMessage": {
-              "type": "keyword"
-            },
-            "traceID": {
-              "type": "text"
-            },
-            "traceState": {
-              "type": "keyword"
-            }
+            "name": { "type": "keyword" },
+            "version": { "type": "version" }
           }
         },
-        "tags": {
-          "type": "object"
-        },
-        "time": {
-          "type": "long"
-        },
-        "attributes": {
-          "type": "flattened"
-        },
-        "resources": {
-          "type": "flattened"
-        },
-        "spanEvents": {
-          "type": "nested",
-          "properties": {
-            "name": {
-              "type": "keyword"
-            },
-            "attribute": {
-              "type": "flattened"
-            },
-            "time": {
-              "type": "long"
-            }
-          }
-        },
-        "spanLinks": {
-          "type": "nested",
-          "properties": {
-            "spanID": {
-              "type": "text"
-            },
-            "traceID": {
-              "type": "text"
-            },
-            "attribute": {
-              "type": "flattened"
-            }
-          }
-        },
-        "usage": {
-          "type": "object",
-          "properties": {
-            "input_tokens": {
-              "type": "long"
-            },
-            "output_tokens": {
-              "type": "long"
-            },
-            "total_tokens": {
-              "type": "long"
-            }
-          }
-        }
+        "parentSpanID": { "type": "text" },
+        "service": { "type": "keyword" },
+        "spanID": { "type": "text" },
+        "start": { "type": "long" },
+        "statusCode": { "type": "text" },
+        "statusMessage": { "type": "keyword" },
+        "traceID": { "type": "text" },
+        "traceState": { "type": "keyword" }
+      }
+    },
+    "tags": { "type": "object" },
+    "time": { "type": "long" },
+    "attributes": { "type": "flattened" },
+    "resources": { "type": "flattened" },
+    "spanEvents": {
+      "type": "nested",
+      "properties": {
+        "name": { "type": "keyword" },
+        "attribute": { "type": "flattened" },
+        "time": { "type": "long" }
+      }
+    },
+    "spanLinks": {
+      "type": "nested",
+      "properties": {
+        "spanID": { "type": "text" },
+        "traceID": { "type": "text" },
+        "attribute": { "type": "flattened" }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "properties": {
+        "input_tokens": { "type": "long" },
+        "output_tokens": { "type": "long" },
+        "total_tokens": { "type": "long" }
       }
     }
-  }'"'"''
+  }
+}
+EOF
+
+index_command='if curl -s -f "http://elasticsearch:9200/loongsuite_traces" > /dev/null; then
+  echo "loongsuite_traces already exists";
+else
+  curl -X PUT "http://elasticsearch:9200/loongsuite_traces" \
+    -H "Content-Type: application/json" \
+    -d '"'"'{"settings":{"index.default_pipeline":"parsing_loongsuite_traces"},"mappings":{"dynamic":"false"}}'"'"';
+fi'
 
 if ! retry_operation "创建 loongsuite_traces 索引" "$index_command"; then
     log_error "创建索引失败，退出初始化"
+    exit 1
+fi
+
+settings_command='curl -X PUT "http://elasticsearch:9200/loongsuite_traces/_settings" \
+  -H "Content-Type: application/json" \
+  -d '"'"'{"index.default_pipeline":"parsing_loongsuite_traces"}'"'"''
+
+if ! retry_operation "设置 loongsuite_traces default pipeline" "$settings_command"; then
+    log_error "设置索引 default pipeline 失败，退出初始化"
+    exit 1
+fi
+
+mapping_command='curl -X PUT "http://elasticsearch:9200/loongsuite_traces/_mapping" \
+  -H "Content-Type: application/json" \
+  --data-binary "@'"$TMP_DIR"'/loongsuite_traces_mapping.json"'
+
+if ! retry_operation "更新 loongsuite_traces mapping" "$mapping_command"; then
+    log_error "更新索引 mapping 失败，退出初始化"
+    exit 1
+fi
+
+migrate_command='curl -X POST "http://elasticsearch:9200/loongsuite_traces/_update_by_query?pipeline=parsing_loongsuite_traces&conflicts=proceed&refresh=true" \
+  -H "Content-Type: application/json" \
+  -d '"'"'{"query":{"exists":{"field":"contents"}}}'"'"''
+
+if ! retry_operation "迁移 loongsuite_traces 旧 contents 文档" "$migrate_command"; then
+    log_error "迁移旧 Trace 文档失败，退出初始化"
     exit 1
 fi
 

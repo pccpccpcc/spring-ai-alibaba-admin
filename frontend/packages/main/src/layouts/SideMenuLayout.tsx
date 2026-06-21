@@ -137,6 +137,21 @@ export default function SideMenuLayout({ children }: { children: React.ReactNode
   // 获取应该高亮的菜单项 key
   const selectedKey = useMemo(() => getSelectedMenuKey(location.pathname), [location.pathname]);
 
+  // 根据 pathname 推断应展开的菜单组（Overview /setting 等无组页不展开，避免 Agent Builder 默认展开）
+  const openGroup = useMemo(() => {
+    const p = location.pathname;
+    if (['/app', '/mcp', '/component', '/knowledge', '/dify'].some((s) => p.startsWith(s))) return ['studio'];
+    if (p.startsWith('/admin/prompt') || p === '/admin/playground' || p === '/admin/version-history') return ['prompt'];
+    if (p.startsWith('/admin/evaluation')) return ['evaluation'];
+    if (p.startsWith('/admin/tracing')) return ['observability'];
+    return []; // /admin（Overview）/ /setting / 其他 → 不展开
+  }, [location.pathname]);
+
+  const [openKeys, setOpenKeys] = useState<string[]>(openGroup);
+  useEffect(() => {
+    setOpenKeys(openGroup);
+  }, [openGroup]);
+
   // 构建菜单项
   const menuItems = useMemo(
     () => [
@@ -306,7 +321,8 @@ export default function SideMenuLayout({ children }: { children: React.ReactNode
               <Menu
                 mode="inline"
                 selectedKeys={[selectedKey]}
-                defaultOpenKeys={collapsed ? [] : ['studio']}
+                openKeys={collapsed ? [] : openKeys}
+                onOpenChange={(keys: any) => setOpenKeys(keys as string[])}
                 items={menuItems}
                 onClick={handleMenuClick}
                 className="border-r-0 mt-6"

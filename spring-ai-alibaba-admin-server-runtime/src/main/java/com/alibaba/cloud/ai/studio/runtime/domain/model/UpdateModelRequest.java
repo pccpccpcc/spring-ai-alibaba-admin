@@ -47,6 +47,11 @@ public class UpdateModelRequest {
 	private String tags;
 
 	/**
+	 * Model type
+	 */
+	private String type;
+
+	/**
 	 * Model status
 	 */
 	private Boolean enable;

@@ -9,13 +9,17 @@ import com.alibaba.cloud.ai.studio.admin.dto.PromptTemplate;
 import com.alibaba.cloud.ai.studio.admin.dto.PromptTemplateDetail;
 import com.alibaba.cloud.ai.studio.admin.dto.PromptVersion;
 import com.alibaba.cloud.ai.studio.admin.dto.PromptVersionDetail;
+import com.alibaba.cloud.ai.studio.admin.dto.PromptVersionDiffResponse;
 import com.alibaba.cloud.ai.studio.admin.dto.request.*;
 import com.alibaba.cloud.ai.studio.admin.exception.StudioException;
 import com.alibaba.cloud.ai.studio.admin.service.PromptRunService;
 import com.alibaba.cloud.ai.studio.admin.service.PromptService;
 import com.alibaba.cloud.ai.studio.admin.service.PromptTemplateService;
+import com.alibaba.cloud.ai.studio.admin.service.PromptVersionDiffService;
 import com.alibaba.cloud.ai.studio.admin.service.PromptVersionService;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -31,6 +35,7 @@ public class PromptController {
 
     private final PromptService promptService;
     private final PromptVersionService promptVersionService;
+    private final PromptVersionDiffService promptVersionDiffService;
     private final PromptTemplateService promptTemplateService;
     private final PromptRunService promptRunService;
 
@@ -109,6 +114,32 @@ public class PromptController {
         log.info("查询Prompt版本详情请求: promptKey={}, version={}", promptKey, version);
         PromptVersionDetail promptVersionDetail = promptVersionService.getByPromptKeyAndVersion(promptKey, version);
         return Result.success(promptVersionDetail);
+    }
+
+    /**
+     * 对比 Prompt 两个版本
+     */
+    @GetMapping("/prompt/version/diff")
+    @Validated
+    public Result<PromptVersionDiffResponse> getPromptVersionDiff(
+            @RequestParam @NotBlank(message = "Prompt Key不能为空")
+            @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Prompt Key只能包含字母、数字、下划线和短横线")
+            @Size(min = 1, max = 255, message = "Prompt Key长度必须在1-255个字符之间")
+            String promptKey,
+            @RequestParam @NotBlank(message = "版本号不能为空")
+            @Pattern(regexp = "^[a-zA-Z0-9._-]+$", message = "版本号只能包含字母、数字、点、下划线和短横线")
+            @Size(min = 1, max = 32, message = "版本号长度必须在1-32个字符之间")
+            String versionA,
+            @RequestParam @NotBlank(message = "版本号不能为空")
+            @Pattern(regexp = "^[a-zA-Z0-9._-]+$", message = "版本号只能包含字母、数字、点、下划线和短横线")
+            @Size(min = 1, max = 32, message = "版本号长度必须在1-32个字符之间")
+            String versionB) throws StudioException {
+        log.info("对比Prompt版本请求: promptKey={}, versionA={}, versionB={}", promptKey, versionA, versionB);
+        if (versionA.equals(versionB)) {
+            throw new StudioException(StudioException.INVALID_PARAM, "对比的两个版本不能相同: " + versionA);
+        }
+        PromptVersionDiffResponse diffResponse = promptVersionDiffService.diff(promptKey, versionA, versionB);
+        return Result.success(diffResponse);
     }
 
     /**

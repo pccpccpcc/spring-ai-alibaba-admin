@@ -63,3 +63,12 @@ docker/middleware/rocketmq/*
 /spring-ai-alibaba-studio/spring-ai-alibaba-studio-server/docker/middleware/kibana/*
 !/spring-ai-alibaba-studio/spring-ai-alibaba-studio-server/docker/middleware/kibana/data/
 !/spring-ai-alibaba-studio/spring-ai-alibaba-studio-server/docker/middleware/kibana/data/.gitkeep
+
+# 本地敏感配置
+scripts/install-deps.local.env
+
+# 本地 agent 工具与会话数据
+.claude/
+
+# 本地中间件安装包、日志、运行时产物
+.local/

@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 680" font-family="'SF Pro Display','Inter','Segoe UI',system-ui,sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f1117"/>
+      <stop offset="100%" stop-color="#181b25"/>
+    </linearGradient>
+    <linearGradient id="gEntry" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f97316" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="gAdapter" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="gCore" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#059669" stop-opacity="0.08"/>
+    </linearGradient>
+    <linearGradient id="gBase" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a855f7" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0.08"/>
+    </linearGradient>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <rect width="960" height="680" fill="url(#bg)" rx="12"/>
+
+  <text x="480" y="42" text-anchor="middle" fill="#e2e8f0" font-size="22" font-weight="700" letter-spacing="0.2">Spring AI Alibaba Admin · 内部模块依赖图</text>
+  <text x="480" y="65" text-anchor="middle" fill="#64748b" font-size="12">Only project modules are shown. Arrows point from depender to dependency.</text>
+  <line x1="310" y1="76" x2="650" y2="76" stroke="#334155" stroke-width="1"/>
+
+  <!-- Layer bands -->
+  <rect x="56" y="100" width="848" height="112" rx="10" fill="#1f2937" fill-opacity="0.18" stroke="#334155" stroke-width="1"/>
+  <text x="78" y="126" fill="#fbbf24" font-size="11" font-weight="700" letter-spacing="1">ENTRY / APP</text>
+
+  <rect x="56" y="236" width="848" height="112" rx="10" fill="#1f2937" fill-opacity="0.14" stroke="#334155" stroke-width="1"/>
+  <text x="78" y="262" fill="#93c5fd" font-size="11" font-weight="700" letter-spacing="1">INTERFACE / CORE</text>
+
+  <rect x="56" y="372" width="848" height="112" rx="10" fill="#1f2937" fill-opacity="0.12" stroke="#334155" stroke-width="1"/>
+  <text x="78" y="398" fill="#c4b5fd" font-size="11" font-weight="700" letter-spacing="1">BASE / RUNTIME</text>
+
+  <!-- server-start -->
+  <rect x="285" y="118" width="390" height="76" rx="9" fill="url(#gEntry)" stroke="#f97316" stroke-width="1.2" stroke-opacity="0.6" filter="url(#shadow)"/>
+  <circle cx="310" cy="143" r="5" fill="#fb923c"/>
+  <text x="326" y="148" fill="#fed7aa" font-size="15" font-weight="800">server-start</text>
+  <text x="326" y="169" fill="#94a3b8" font-size="10">可运行 Spring Boot 应用，装配 Web 层、配置与静态资源</text>
+  <rect x="607" y="132" width="48" height="22" rx="11" fill="#f97316" fill-opacity="0.14"/>
+  <text x="631" y="147" text-anchor="middle" fill="#fdba74" font-size="10" font-weight="700">3 deps</text>
+
+  <!-- server-openapi -->
+  <rect x="92" y="254" width="330" height="76" rx="9" fill="url(#gAdapter)" stroke="#3b82f6" stroke-width="1.2" stroke-opacity="0.6" filter="url(#shadow)"/>
+  <circle cx="117" cy="279" r="5" fill="#60a5fa"/>
+  <text x="133" y="284" fill="#bfdbfe" font-size="15" font-weight="800">server-openapi</text>
+  <text x="133" y="305" fill="#94a3b8" font-size="10">对外 Chat / OpenAPI 接口适配层</text>
+  <rect x="354" y="268" width="48" height="22" rx="11" fill="#3b82f6" fill-opacity="0.14"/>
+  <text x="378" y="283" text-anchor="middle" fill="#93c5fd" font-size="10" font-weight="700">1 dep</text>
+
+  <!-- server-core -->
+  <rect x="538" y="254" width="330" height="76" rx="9" fill="url(#gCore)" stroke="#10b981" stroke-width="1.2" stroke-opacity="0.6" filter="url(#shadow)"/>
+  <circle cx="563" cy="279" r="5" fill="#34d399"/>
+  <text x="579" y="284" fill="#a7f3d0" font-size="15" font-weight="800">server-core</text>
+  <text x="579" y="305" fill="#94a3b8" font-size="10">核心业务能力、工作流、RAG、模型与工具执行</text>
+  <rect x="800" y="268" width="48" height="22" rx="11" fill="#10b981" fill-opacity="0.14"/>
+  <text x="824" y="283" text-anchor="middle" fill="#6ee7b7" font-size="10" font-weight="700">1 dep</text>
+
+  <!-- server-runtime -->
+  <rect x="285" y="390" width="390" height="76" rx="9" fill="url(#gBase)" stroke="#a855f7" stroke-width="1.2" stroke-opacity="0.6" filter="url(#shadow)"/>
+  <circle cx="310" cy="415" r="5" fill="#c084fc"/>
+  <text x="326" y="420" fill="#ddd6fe" font-size="15" font-weight="800">server-runtime</text>
+  <text x="326" y="441" fill="#94a3b8" font-size="10">领域模型、DTO、枚举、常量与公共运行时对象</text>
+  <rect x="607" y="404" width="48" height="22" rx="11" fill="#a855f7" fill-opacity="0.14"/>
+  <text x="631" y="419" text-anchor="middle" fill="#d8b4fe" font-size="10" font-weight="700">0 deps</text>
+
+  <!-- Direct dependency arrows -->
+  <path d="M 390 194 C 360 218 320 228 257 254" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <text x="310" y="223" fill="#64748b" font-size="9">direct</text>
+
+  <path d="M 570 194 C 600 218 640 228 703 254" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <text x="650" y="223" fill="#64748b" font-size="9">direct</text>
+
+  <path d="M 480 194 C 480 260 480 330 480 390" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <text x="492" y="356" fill="#64748b" font-size="9">direct</text>
+
+  <path d="M 422 292 L 538 292" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <text x="480" y="284" text-anchor="middle" fill="#64748b" font-size="9">direct</text>
+
+  <path d="M 703 330 C 670 358 620 374 545 390" fill="none" stroke="#94a3b8" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <text x="645" y="362" fill="#64748b" font-size="9">direct</text>
+
+  <!-- Dependency summary -->
+  <rect x="92" y="512" width="776" height="112" rx="9" fill="#111827" fill-opacity="0.72" stroke="#334155" stroke-width="1"/>
+  <text x="116" y="538" fill="#cbd5e1" font-size="12" font-weight="800">Direct Maven dependencies</text>
+
+  <text x="116" y="564" fill="#fbbf24" font-size="10" font-weight="700">server-start</text>
+  <text x="214" y="564" fill="#94a3b8" font-size="10">→ server-core, server-openapi, server-runtime</text>
+
+  <text x="116" y="586" fill="#93c5fd" font-size="10" font-weight="700">server-openapi</text>
+  <text x="214" y="586" fill="#94a3b8" font-size="10">→ server-core</text>
+
+  <text x="420" y="586" fill="#6ee7b7" font-size="10" font-weight="700">server-core</text>
+  <text x="506" y="586" fill="#94a3b8" font-size="10">→ server-runtime</text>
+
+  <text x="116" y="608" fill="#d8b4fe" font-size="10" font-weight="700">server-runtime</text>
+  <text x="214" y="608" fill="#94a3b8" font-size="10">→ no internal module dependencies</text>
+
+  <rect x="666" y="526" width="176" height="38" rx="7" fill="#052e1a" stroke="#16a34a" stroke-width="1" stroke-opacity="0.55"/>
+  <text x="754" y="549" text-anchor="middle" fill="#86efac" font-size="11" font-weight="800">DAG · 无循环依赖</text>
+
+  <text x="480" y="654" text-anchor="middle" fill="#334155" font-size="10">Module aliases map to spring-ai-alibaba-admin-server-* artifacts in pom.xml</text>
+</svg>

@@ -143,16 +143,6 @@ export default function Ceeate() {
           );
           return;
         }
-
-        if (!formValue.rerank_model) {
-          reject(
-            $i18n.get({
-              id: 'main.pages.Knowledge.Create.index.pleaseSelectRerankModel',
-              dm: '请先选择Rerank模型',
-            }),
-          );
-          return;
-        }
       }
       resolve(formValue);
     });
@@ -176,6 +166,9 @@ export default function Ceeate() {
         search_config: {
           top_k: formValue.top_k,
           similarity_threshold: formValue.similarity_threshold,
+          enable_rerank: Boolean(
+            formValue.rerank_provider && formValue.rerank_model,
+          ),
           rerank_provider: formValue.rerank_provider,
           rerank_model: formValue.rerank_model,
         },

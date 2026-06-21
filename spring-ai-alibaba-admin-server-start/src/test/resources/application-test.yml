@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: saa-studio-test
+  main:
+    allow-bean-definition-overriding: true
+  config:
+    import: []
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema-test.sql
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+  data:
+    redis:
+      database: 0
+  elasticsearch:
+    uris: http://localhost:9200
+  ai:
+    alibaba:
+      arms:
+        enabled: false
+
+management:
+  otlp:
+    tracing:
+      export:
+        enabled: false
+    metrics:
+      export:
+        enabled: false
+    logging:
+      export:
+        enabled: false
+
+rocketmq:
+  document-index-topic: topic_saa_studio_document_index
+  document-index-group: group_saa_studio_document_index
+
+initializr:
+  web:
+    enabled: false
+
+logging:
+  level:
+    org.springframework.boot.autoconfigure: WARN
+    org.springframework.test.context: WARN

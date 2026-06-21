@@ -13,9 +13,9 @@ flushers:
     Tags: true
   - Type: flusher_elasticsearch
     Addresses:
-      - http://elasticsearch:9200
+      - http://host.docker.internal:9200
     Index: loongsuite_traces
     Authentication:
       PlainText:
-        Username: elastic
-        Password: elastic
+        Username: "elastic"
+        Password: "elastic"

@@ -985,7 +985,7 @@ const AgentSchemaCreator: React.FC = () => {
             id: 'main.pages.App.index.home',
             dm: '首页',
           }),
-          path: '/',
+          path: '/admin',
         },
         {
           title: 'Agent Schema 创建',

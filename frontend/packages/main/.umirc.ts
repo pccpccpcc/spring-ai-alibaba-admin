@@ -23,7 +23,7 @@ export default defineConfig({
     {
       path: '/admin',
       routes: [
-        { path: '/admin', component: '@/legacy/pages/index' },
+        { path: '/admin', component: 'Overview/index' },
         { path: '/admin/playground', component: '@/legacy/pages/playground/playground' },
         { path: '/admin/prompts', component: '@/legacy/pages/prompts/prompts' },
         { path: '/admin/prompt-detail', component: '@/legacy/pages/prompts/prompt-detail/prompt-detail' },

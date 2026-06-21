@@ -255,7 +255,7 @@ public class WorkspaceServiceImpl extends ServiceImpl<WorkspaceMapper, Workspace
 
 		LambdaQueryWrapper<WorkspaceEntity> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(WorkspaceEntity::getAccountId, uid)
-			.ne(WorkspaceEntity::getStatus, CommonStatus.DELETED.getValue())
+			.ne(WorkspaceEntity::getStatus, CommonStatus.DELETED.getStatus())
 			.orderByAsc(WorkspaceEntity::getId)
 			.last("limit 1");
 

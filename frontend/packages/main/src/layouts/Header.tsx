@@ -15,7 +15,7 @@ export default function (props: {
     <div className={styles['header']}>
       <img
         className={styles['header-logo']}
-        onClick={() => history.push('/')}
+        onClick={() => history.push('/admin')}
         src={darkMode ? '/images/logoBlack.png' : '/images/logoWhite.png'}
       />
       {props.children}

@@ -26,6 +26,7 @@ import com.alibaba.cloud.ai.studio.core.rag.vectorstore.VectorStoreFactory;
 import com.alibaba.cloud.ai.studio.core.utils.LogUtils;
 import com.alibaba.cloud.ai.studio.core.utils.concurrent.ThreadPoolUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.rag.Query;
@@ -150,7 +151,8 @@ public class KnowledgeBaseDocumentRetriever implements DocumentRetriever {
 		}
 
 		List<Document> documents = vectorStore.similaritySearch(searchRequestBuilder.build());
-		if (searchOptions.getEnableRerank()) {
+		if (Boolean.TRUE.equals(searchOptions.getEnableRerank())
+				&& StringUtils.isNoneBlank(searchOptions.getRerankProvider(), searchOptions.getRerankModel())) {
 			documents = rerankDocuments(searchOptions, query, documents);
 		}
 
