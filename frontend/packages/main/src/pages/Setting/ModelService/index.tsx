@@ -105,7 +105,7 @@ const ModelService = () => {
             id: 'main.pages.App.index.home',
             dm: '首页',
           }),
-          path: '/',
+          path: '/admin',
         },
         {
           title: $i18n.get({

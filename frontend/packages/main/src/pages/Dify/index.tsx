@@ -134,7 +134,7 @@ const DifyConverter: React.FC = () => {
             id: 'main.pages.App.index.home',
             dm: '首页',
           }),
-          path: '/',
+          path: '/admin',
         },
         {
           title: 'DIFY 应用转换',
